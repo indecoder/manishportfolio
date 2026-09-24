@@ -47,7 +47,7 @@ export const site = {
       country: "IN",
     },
     /** Shown on the contact section and used for the mailto: link. */
-    email: "manishsharan@live.com",
+    email: "manishsharan@protonmail.com",
     avatar: "/avatar.svg",
     avatarAlt: "Portrait of Manish Kumar",
     resume: "/resume.pdf",
@@ -56,7 +56,7 @@ export const site = {
 
   social: {
     github: "https://github.com/indecoder",
-    linkedin: "https://www.linkedin.com/in/dev-manish",
+    linkedin: "https://www.linkedin.com/in/sharanmanish",
     /**
      * No X/Twitter handle is published, so this key is intentionally absent
      * rather than shipping a dead link - app/layout.tsx omits the
@@ -77,10 +77,10 @@ export const site = {
     { label: "GitHub", href: "https://github.com/indecoder", icon: "github" },
     {
       label: "LinkedIn",
-      href: "https://www.linkedin.com/in/dev-manish",
+      href: "https://www.linkedin.com/in/sharanmanish",
       icon: "linkedin",
     },
-    { label: "Email", href: "mailto:manishsharan@live.com", icon: "email" },
+    { label: "Email", href: "mailto:manishsharan@protonmail.com", icon: "email" },
     { label: "RSS", href: "/rss.xml", icon: "rss" },
   ] satisfies SocialLink[],
 

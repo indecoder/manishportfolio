@@ -14,7 +14,7 @@ const LINES = [
   { size: 22, y: 720, text: "Manish Kumar" },
   { size: 13, y: 696, text: "Senior Lead Technical Specialist @ Kyndryl" },
   { size: 10, y: 676, text: "Bengaluru, Karnataka, India" },
-  { size: 10, y: 658, text: "manishsharan@yopmail.com  |  linkedin.com/in/dev-manish" },
+  { size: 10, y: 658, text: "manishsharan@protonmail.com  |  linkedin.com/in/sharanmanish" },
   { size: 11, y: 618, text: "PLACEHOLDER - replace public/resume.pdf with your real CV." },
 ];
 

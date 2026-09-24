@@ -18,7 +18,7 @@ export function Card({
       className={cn(
         "rounded-2xl border border-line bg-card p-5 relative",
         hoverable &&
-          "transition-colors hover:border-accent/50 hover:bg-muted/60",
+          "transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/50 hover:bg-muted/60 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/40",
         className,
       )}
     >
