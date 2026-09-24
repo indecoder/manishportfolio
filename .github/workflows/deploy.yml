@@ -1,12 +1,14 @@
 name: Deploy
 
 # Promotion pipeline. Each stage owns a separate Firebase Hosting site, so a
-# deploy can only ever affect the stage it targets:
+# deploy can only ever affect the stage it targets. One branch per stage:
+# merging a PR into a branch IS the deploy for that stage.
 #
 #   pull_request        -> preview channel on the dev site   (throwaway URL)
 #   push to develop     -> dev   fullstackmanish-dev.web.app
-#   push to main        -> uat   fullstackmanish-uat.web.app
-#   push tag v*         -> prod  fullstackmanish.web.app
+#   push to uat         -> uat   fullstackmanish-uat.web.app
+#   push to main        -> prod  fullstackmanish.web.app
+#   push tag v*         -> prod  (optional release marker, same stage)
 #   workflow_dispatch   -> whichever stage you pick
 #
 # Every deploy job runs inside a GitHub ENVIRONMENT named dev / uat / prod.
@@ -16,10 +18,16 @@ name: Deploy
 #
 # Authentication: the FIREBASE_SERVICE_ACCOUNT secret is written to a file and
 # exposed as GOOGLE_APPLICATION_CREDENTIALS - the CI auth path documented for
-# firebase-tools. The service account needs the Firebase Hosting Admin role.
+# firebase-tools. The service account needs three roles and no more:
+#   roles/firebasehosting.admin            deploy sites + preview channels
+#   roles/serviceusage.serviceUsageConsumer quota billing on the project
+#                                           (required by firebase-tools >=13.4.0)
+#   roles/serviceusage.apiKeysViewer       required for CLI deploys
+# Not needed here: firebaseauth.admin (this project has no Auth) and run.viewer
+# (no Hosting rewrites to Cloud Run / Functions).
 on:
   push:
-    branches: [develop, main]
+    branches: [develop, uat, main]
     tags: ["v*"]
   pull_request:
   workflow_dispatch:
@@ -75,7 +83,8 @@ jobs:
             push)
               case "$REF" in
                 refs/heads/develop) stage="dev" ;;
-                refs/heads/main)    stage="uat" ;;
+                refs/heads/uat)     stage="uat" ;;
+                refs/heads/main)    stage="prod" ;;
                 refs/tags/v*)       stage="prod" ;;
                 *)                  stage="" ;;
               esac

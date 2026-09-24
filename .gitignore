@@ -28,6 +28,13 @@ build.log
 *service-account*.json
 *.credentials.json
 google-application-credentials*.json
+# Google Cloud names a downloaded key `<project-id>-<key-id>.json`, e.g.
+# `fullstackmanish-a1b2c3d4e5f6.json`, which none of the patterns above match.
+# Without this a key saved into the repo folder would be committed by
+# `git add .` - and this repository is public. `*-sa.json` covers the common
+# hand-renamed short forms as well.
+fullstackmanish-*.json
+*-sa.json
 
 # misc
 .DS_Store

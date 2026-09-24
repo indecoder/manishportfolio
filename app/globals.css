@@ -138,9 +138,83 @@ h3:hover .heading-anchor,
   left: 0;
 }
 
+/* ------------------------------------------------------------------ */
+/* Hero backdrop + scroll-reveal motion                                 */
+/* (components/home/HeroBackdrop.tsx, components/ui/Reveal.tsx)         */
+/* ------------------------------------------------------------------ */
+
+/* Faint dotted grid behind the hero; fades out towards the fold so it never
+   fights the heading for attention. Uses --fg so it adapts to both themes. */
+.dot-grid {
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--fg) 12%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+  mask-image: linear-gradient(to bottom, black, transparent 65%);
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent 65%);
+}
+
+/* Slow orb breathing. The parallax transform sits on the outer wrapper
+   (HeroBackdrop), this animation on the inner element, so the two never fight
+   over the same transform property. */
+@keyframes orb-drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(1.25rem, -1rem, 0) scale(1.06);
+  }
+}
+
+@keyframes orb-drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(-1.5rem, 1.25rem, 0) scale(0.92);
+  }
+}
+
+.orb-drift-a {
+  animation: orb-drift-a 18s ease-in-out infinite;
+}
+
+.orb-drift-b {
+  animation: orb-drift-b 22s ease-in-out infinite;
+}
+
+/* Scroll-reveal: starts hidden, animates in when the IntersectionObserver
+   fires. Below-the-fold use only — the hero renders visible so it never
+   delays first paint. */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  transition:
+    opacity 550ms ease-out,
+    transform 550ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  /* Reveal must never depend on JS firing: with motion reduced the content is
+     simply there, immediately. */
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 
   *,
