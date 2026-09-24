@@ -5,7 +5,6 @@ import { site } from "@/lib/site";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { SocialLinks } from "@/components/site/SocialLinks";
-import { Reveal } from "@/components/ui/Reveal";
 
 /** Contact block: mailto CTA plus a copy-email button. */
 export function ContactCTA() {
@@ -22,8 +21,7 @@ export function ContactCTA() {
   }
 
   return (
-    <Reveal className="mt-10">
-      <Card className="p-6 sm:p-8">
+    <Card className="mt-10 p-6 sm:p-8">
         <h2 className="text-2xl font-semibold tracking-tight">Let&apos;s talk</h2>
         <p className="mt-2 max-w-xl text-sm leading-6 text-muted-fg">
           Open to interesting work, collaborations and speaking opportunities.
@@ -51,6 +49,5 @@ export function ContactCTA() {
           className="mt-6 flex flex-wrap items-center gap-2"
         />
       </Card>
-    </Reveal>
   );
 }

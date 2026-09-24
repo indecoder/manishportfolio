@@ -48,6 +48,18 @@ export const site = {
     },
     /** Shown on the contact section and used for the mailto: link. */
     email: "manishsharan@protonmail.com",
+    /** Availability line shown as a pill above the home hero headline. */
+    availability: "Open to senior front-end and AI platform roles",
+    /**
+     * Compact proof points rendered under the home hero actions. Grounded in
+     * page copy: nine years (bio), twelve-person flagship team (Jain
+     * University project), five employers named in the bio.
+     */
+    stats: [
+      { value: "9+", label: "Years building for the enterprise" },
+      { value: "12", label: "Engineers led on flagship platform" },
+      { value: "5", label: "Employers: Kyndryl, Oracle, IBM…" },
+    ],
     avatar: "/avatar.svg",
     avatarAlt: "Portrait of Manish Kumar",
     resume: "/resume.pdf",

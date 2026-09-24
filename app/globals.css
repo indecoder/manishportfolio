@@ -139,69 +139,70 @@ h3:hover .heading-anchor,
 }
 
 /* ------------------------------------------------------------------ */
-/* Hero backdrop + scroll-reveal motion                                 */
-/* (components/home/HeroBackdrop.tsx, components/ui/Reveal.tsx)         */
+/* Home hero (components/home/Hero.tsx)                                */
 /* ------------------------------------------------------------------ */
 
-/* Faint dotted grid behind the hero; fades out towards the fold so it never
-   fights the heading for attention. Uses --fg so it adapts to both themes. */
-.dot-grid {
-  background-image: radial-gradient(
-    color-mix(in oklab, var(--fg) 12%, transparent) 1px,
-    transparent 1px
-  );
-  background-size: 22px 22px;
-  mask-image: linear-gradient(to bottom, black, transparent 65%);
-  -webkit-mask-image: linear-gradient(to bottom, black, transparent 65%);
+/* Static two-stop accent wash behind the hero. Deliberately fixed: the
+   previous scroll-parallax orbs read as smudges on light backgrounds, so the
+   hero now sells on first paint with no scroll listeners at all. */
+.hero-mesh {
+  background-image:
+    radial-gradient(
+      28rem 20rem at 12% 6%,
+      color-mix(in oklab, var(--accent) 16%, transparent),
+      transparent 65%
+    ),
+    radial-gradient(
+      30rem 22rem at 88% 92%,
+      color-mix(in oklab, var(--accent) 10%, transparent),
+      transparent 60%
+    );
 }
 
-/* Slow orb breathing. The parallax transform sits on the outer wrapper
-   (HeroBackdrop), this animation on the inner element, so the two never fight
-   over the same transform property. */
-@keyframes orb-drift-a {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  50% {
-    transform: translate3d(1.25rem, -1rem, 0) scale(1.06);
-  }
-}
-
-@keyframes orb-drift-b {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  50% {
-    transform: translate3d(-1.5rem, 1.25rem, 0) scale(0.92);
-  }
-}
-
-.orb-drift-a {
-  animation: orb-drift-a 18s ease-in-out infinite;
-}
-
-.orb-drift-b {
-  animation: orb-drift-b 22s ease-in-out infinite;
-}
-
-/* Scroll-reveal: starts hidden, animates in when the IntersectionObserver
-   fires. Below-the-fold use only — the hero renders visible so it never
-   delays first paint. */
-.reveal {
+/* Entrance only: each hero block fades up once, staggered through an inline
+   animation-delay. Runs on CSS alone (no JS, no scroll listener). */
+.hero-enter {
   opacity: 0;
-  transform: translate3d(0, 16px, 0);
-  transition:
-    opacity 550ms ease-out,
-    transform 550ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: hero-enter 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.reveal-visible {
-  opacity: 1;
-  transform: none;
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Availability pill dot: a soft ping behind a solid dot. */
+.availability-dot {
+  position: relative;
+}
+
+.availability-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background-color: #22c55e;
+  animation: availability-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes availability-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  80%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -209,12 +210,14 @@ h3:hover .heading-anchor,
     scroll-behavior: auto;
   }
 
-  /* Reveal must never depend on JS firing: with motion reduced the content is
-     simply there, immediately. */
-  .reveal {
+  /* Entrance and ping must never depend on animation running. */
+  .hero-enter {
     opacity: 1;
-    transform: none;
-    transition: none;
+    animation: none;
+  }
+
+  .availability-dot::after {
+    animation: none;
   }
 
   *,
