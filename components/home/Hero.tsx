@@ -11,10 +11,11 @@ import { HeroProfileCard } from "@/components/home/HeroProfileCard";
  * primary actions, proof stats and monochrome social links. Right column - a
  * floating profile card with overlapping chips.
  *
- * Motion: the only moving layer is the ambient orb field behind the section
- * (AmbientOrbs), scrubbed against scroll and inert under
- * prefers-reduced-motion. The text itself never moves, so the parallax reads
- * as depth instead of smear.
+ * Motion: this section is entirely static. The only moving layer on the route
+ * is the single fixed global background mounted once in app/layout.tsx, which
+ * scrubs against scroll and is inert under prefers-reduced-motion. Nothing in
+ * the hero itself animates, so the background parallax reads as depth instead
+ * of smear.
  */
 export function Hero() {
   return (
@@ -23,7 +24,7 @@ export function Hero() {
           page wrapper - so this grid must never sit flush to the viewport edge.
           No `overflow-hidden` here: the global background is fixed, and clipping
           would cut the profile card's floating chips. */}
-      <Container>
+      <Container wide>
       <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
         <div>
           {/* Availability: the first thing a recruiter should see. */}

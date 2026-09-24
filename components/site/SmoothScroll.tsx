@@ -24,6 +24,18 @@ export function SmoothScroll() {
 
     registerMotion();
 
+    // Header geometry lives in ONE place: the `--header-h` token in
+    // globals.css. Read it here so the anchor offset can never drift from the
+    // real sticky header height. The extra 24px is breathing room so a
+    // permalinked heading never lands flush against the header's bottom edge.
+    const headerHeight = (() => {
+      const raw = getComputedStyle(document.documentElement)
+        .getPropertyValue("--header-h")
+        .trim();
+      const px = Number.parseFloat(raw);
+      return Number.isFinite(px) ? px : 64;
+    })();
+
     const lenis = new Lenis({
       // Lower lerp = longer, heavier glide. 0.09 reads as premium without
       // ever feeling laggy behind the cursor.
@@ -33,8 +45,8 @@ export function SmoothScroll() {
       smoothWheel: true,
       gestureOrientation: "vertical",
       // Same-page anchors (skip link, MDX heading permalinks) are intercepted
-      // by Lenis; -88px keeps the target clear of the 64px sticky header.
-      anchors: { offset: -88 },
+      // by Lenis; the negative offset keeps the target clear of the header.
+      anchors: { offset: -(headerHeight + 24) },
       // Never smooth-scroll for visitors who asked for reduced motion.
       respectReducedMotion: true,
     });

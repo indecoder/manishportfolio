@@ -9,12 +9,13 @@ import { gsap, registerMotion } from "@/lib/motion";
  *
  * Why this exists
  * ---------------
- * Ambient colour used to be painted per section (`<AmbientOrbs>` inside each
- * `<section class="overflow-hidden">`). Every section then clipped its own
+ * Ambient colour used to be painted per section, with an orb component inside
+ * each `<section class="overflow-hidden">`. Every section then clipped its own
  * gradient at its own box edge, which read as harsh horizontal seams wherever
  * two sections met. This component replaces all of that with ONE layer that is
  * `position: fixed` and lives outside the document flow, so the wash is
- * continuous from the top of the page to the bottom of the footer.
+ * continuous from the top of the page to the bottom of the footer. (The
+ * per-section orb component was deleted once this became the only background.)
  *
  * Structure (three nested layers, each animating a different property so they
  * compose instead of overwriting each other):

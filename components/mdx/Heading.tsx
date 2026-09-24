@@ -14,7 +14,7 @@ export function H1(props: HeadingProps) {
 export function H2(props: HeadingProps) {
   return (
     <h2
-      className="mt-12 mb-4 scroll-mt-24 border-b border-line pb-2 text-2xl font-semibold tracking-tight"
+      className="mt-12 mb-4 scroll-mt-(--scroll-mt) border-b border-line pb-2 text-2xl font-semibold tracking-tight"
       {...props}
     />
   );
@@ -22,12 +22,12 @@ export function H2(props: HeadingProps) {
 
 export function H3(props: HeadingProps) {
   return (
-    <h3 className="mt-8 mb-3 scroll-mt-24 text-xl font-semibold tracking-tight" {...props} />
+    <h3 className="mt-8 mb-3 scroll-mt-(--scroll-mt) text-xl font-semibold tracking-tight" {...props} />
   );
 }
 
 export function H4(props: HeadingProps) {
   return (
-    <h4 className="mt-6 mb-2 scroll-mt-24 text-base font-semibold uppercase tracking-wide text-muted-fg" {...props} />
+    <h4 className="mt-6 mb-2 scroll-mt-(--scroll-mt) text-base font-semibold uppercase tracking-wide text-muted-fg" {...props} />
   );
 }

@@ -19,7 +19,15 @@
   --accent-fg: #ffffff;
   --card: #ffffff;
   --shadow: 15 23 42; /* slate-900 rgb, for alpha shadows */
-  --header-h: 64px; /* sticky header height  */
+
+  /* Sticky-header height — the SINGLE source of truth for header geometry.
+     Referenced by Header.tsx (`h-(--header-h)`), by the Lenis anchor offset
+     in SmoothScroll.tsx (read at runtime via getComputedStyle), and by
+     --scroll-mt below. Change it here and all three follow. */
+  --header-h: 64px;
+  /* Anchor landing clearance for MDX heading permalinks and the skip link:
+     header height + 32px of air. Used as `scroll-mt-(--scroll-mt)`. */
+  --scroll-mt: 6rem;
 }
 
 /* Expose the palette as Tailwind v4 theme tokens: bg-bg, text-fg, border-line… */
@@ -101,27 +109,6 @@ html.lenis body {
 /* ------------------------------------------------------------------ */
 /* Site ambience + shared surface treatments                           */
 /* ------------------------------------------------------------------ */
-
-/* Faint fixed aurora behind the whole page: pale blue and pale purple washes
-   that read as atmosphere on every route. The animated orbs in
-   components/ui/AmbientOrbs.tsx layer on top of this. */
-.aurora {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    radial-gradient(
-      42rem 28rem at 88% -8%,
-      color-mix(in oklab, #2563eb 7%, transparent),
-      transparent 62%
-    ),
-    radial-gradient(
-      38rem 26rem at -12% 38%,
-      color-mix(in oklab, #7c3aed 6%, transparent),
-      transparent 58%
-    );
-}
 
 /* Gradient hairline: replaces flat borders on premium surfaces (header,
    footer, feature cards). Fades out at the edges so it never looks boxed. */
@@ -212,16 +199,6 @@ h3:hover .heading-anchor,
 
 .skip-link:focus {
   left: 0;
-}
-
-/* ------------------------------------------------------------------ */
-/* Ambient gradient orbs (components/ui/AmbientOrbs.tsx)                */
-/* The pale blue / purple discs are plain Tailwind surfaces (`blur-3xl` */
-/* + `bg-blue-200/40`), so the only CSS they need is a hint that they   */
-/* will be transformed every scroll frame.                              */
-/* ------------------------------------------------------------------ */
-[data-orb] {
-  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {

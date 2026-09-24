@@ -18,8 +18,9 @@ function isActive(pathname: string, href: string): boolean {
  * route underlined, and a hamburger panel below `md`.
  *
  * Light-only surface (`bg-white/85` + blur) so it reads as frosted glass over
- * the ambient orbs rather than a solid bar. The `h-16` (64px) height is what
- * `--header-h` and the Lenis anchor offset in SmoothScroll assume.
+ * the global background rather than a solid bar. The height comes from the
+ * `--header-h` token in globals.css, which SmoothScroll also reads to offset
+ * same-page anchors — so the two can never drift apart.
  */
 export function Header() {
   const pathname = usePathname() ?? "/";
@@ -27,7 +28,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200/80 bg-white/85 shadow-sm shadow-gray-900/[0.03] backdrop-blur-md supports-[backdrop-filter]:bg-white/70">
-      <Container wide className="flex h-16 items-center justify-between gap-4">
+      <Container wide className="flex h-(--header-h) items-center justify-between gap-4">
         <Link
           href="/"
           className="-mx-2 -my-1 rounded-lg px-2 py-1 text-sm font-semibold tracking-tight text-gray-900 transition-colors hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
@@ -89,7 +90,7 @@ export function Header() {
           aria-label="Mobile"
           className="border-t border-gray-200 bg-white md:hidden"
         >
-          <Container className="flex flex-col gap-1 py-3">
+          <Container wide className="flex flex-col gap-1 py-3">
             {site.nav.map((item) => (
               <Link
                 key={item.href}

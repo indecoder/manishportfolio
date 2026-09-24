@@ -114,7 +114,7 @@ export default function UsesPage() {
                 {section.items.map((item) => (
                   <div
                     key={item.name}
-                    className="rounded-2xl border border-line bg-card/85 p-4 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-accent/50 hover:shadow-xl hover:shadow-accent/[0.07] dark:hover:shadow-accent/[0.12]"
+                    className="rounded-2xl border border-line bg-card/85 p-4 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-accent/50 hover:shadow-xl hover:shadow-accent/[0.07]"
                   >
                     <dt className="text-sm font-semibold">{item.name}</dt>
                     <dd className="mt-1 text-sm leading-6 text-muted-fg">

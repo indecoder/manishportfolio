@@ -24,7 +24,7 @@ export default async function HomePage() {
           nesting containers would double the horizontal padding. */}
       <Hero />
 
-      <Container>
+      <Container wide>
         <ProjectGrid projects={projects} />
         <LatestPosts posts={posts} />
         <ContactCTA />

@@ -8,9 +8,9 @@ import { site } from "@/lib/site";
  * location, plus two chips that overlap the card edges so the composition
  * reads as layered rather than a flat box.
  *
- * Purely static markup: the depth in this section comes from the scrubbed orb
- * field behind it (AmbientOrbs), so nothing here needs JS, pointer listeners
- * or reduced-motion handling.
+ * Purely static markup: the depth on this route comes from the single fixed
+ * global background layer mounted once in app/layout.tsx, so nothing here
+ * needs JS, pointer listeners or reduced-motion handling.
  */
 export function HeroProfileCard() {
   return (

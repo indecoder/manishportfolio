@@ -66,7 +66,7 @@ export default async function TagPage({ params }: Props) {
           {posts.length} {posts.length === 1 ? "post" : "posts"}
         </p>
         <h1 className="mt-3 text-balance text-4xl font-bold tracking-tight sm:text-5xl">
-          Posts tagged <span className="text-gradient">#{tag}</span>
+          Posts tagged <span className="text-accent">#{tag}</span>
         </h1>
       </header>
 
