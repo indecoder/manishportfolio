@@ -19,11 +19,16 @@ export default async function HomePage() {
   ]);
 
   return (
-    <Container wide>
+    <main>
+      {/* Hero brings its own Container, so it sits outside the page wrapper -
+          nesting containers would double the horizontal padding. */}
       <Hero />
-      <ProjectGrid projects={projects} />
-      <LatestPosts posts={posts} />
-      <ContactCTA />
+
+      <Container wide>
+        <ProjectGrid projects={projects} />
+        <LatestPosts posts={posts} />
+        <ContactCTA />
+      </Container>
 
       <script
         type="application/ld+json"
@@ -31,6 +36,6 @@ export default async function HomePage() {
           __html: jsonLdToString(blogCollectionJsonLd(posts, "Latest writing", "/")),
         }}
       />
-    </Container>
+    </main>
   );
 }

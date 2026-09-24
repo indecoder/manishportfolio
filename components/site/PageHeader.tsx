@@ -1,6 +1,3 @@
-"use client";
-
-import { ParallaxBackdrop } from "@/components/ui/ParallaxBackdrop";
 import { Container } from "@/components/ui/Container";
 
 type PageHeaderProps = {
@@ -14,9 +11,13 @@ type PageHeaderProps = {
 };
 
 /**
- * Shared interior-page header: kicker, title, description over a parallax
- * glow, with an optional aside slot. Gives every index page the same depth
- * treatment as the home hero without repeating markup.
+ * Shared interior-page header: kicker, title, description, with an optional
+ * aside slot. Gives every index page the same treatment without repeating
+ * markup.
+ *
+ * Server Component: nothing here needs the client, so no JS is shipped. The
+ * ambient depth behind every route comes from the single fixed `GlobalBackground`
+ * layer mounted once in app/layout.tsx.
  */
 export function PageHeader({
   eyebrow,
@@ -27,8 +28,6 @@ export function PageHeader({
 }: PageHeaderProps) {
   return (
     <header className="relative overflow-hidden pb-10 pt-14 sm:pt-16">
-      <ParallaxBackdrop side="right" speed={0.1} size={24} />
-
       <Container
         wide
         className="relative flex flex-col gap-8 md:flex-row md:items-end md:justify-between"

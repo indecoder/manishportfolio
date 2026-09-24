@@ -6,7 +6,14 @@
  * fetches it once and filters it in memory. For a few hundred documents this is
  * faster and simpler than shipping a full-text index like Lunr.
  *
- * Wired up in package.json as part of "postbuild".
+ * Wired up in package.json as part of "postbuild" and in scripts/build.mjs.
+ *
+ * STATUS: the generator is live and out/search.json is a required build output,
+ * but no component fetches it YET - the blog search UI that consumes it is a
+ * scheduled deliverable. Until that lands the file is published but unused.
+ * If that UI is dropped, remove this script, its call in scripts/build.mjs,
+ * the "postbuild" entry in package.json, and "out/search.json" from
+ * REQUIRED_OUTPUTS in scripts/build.mjs.
  */
 
 import { readdir, readFile, writeFile, mkdir } from "node:fs/promises";

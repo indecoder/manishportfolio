@@ -3,7 +3,6 @@ import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { SocialLinks } from "@/components/site/SocialLinks";
-import { ParallaxBackdrop } from "@/components/ui/ParallaxBackdrop";
 import { site } from "@/lib/site";
 import { jsonLdToString, personJsonLd } from "@/lib/seo";
 
@@ -181,8 +180,6 @@ export default function AboutPage() {
   return (
     <>
       <header className="relative overflow-hidden pb-8 pt-14 sm:pt-16">
-        <ParallaxBackdrop side="right" speed={0.1} size={22} />
-
         <Container wide className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
           <Image
             src={site.author.avatar}
@@ -197,7 +194,7 @@ export default function AboutPage() {
               About
             </p>
             <h1 className="mt-2 text-balance text-4xl font-bold tracking-tight sm:text-5xl">
-              About <span className="text-gradient">{site.author.name}</span>
+              About {site.author.name}
             </h1>
             <p className="mt-2 text-base text-muted-fg">
               {site.author.role} · {site.author.location}
@@ -209,7 +206,7 @@ export default function AboutPage() {
         </Container>
       </header>
 
-      <Container className="pb-14">
+      <Container wide className="pb-14">
       <section aria-labelledby="bio" className="mt-10 max-w-2xl">
         <h2 id="bio" className="sr-only">
           Biography
@@ -234,7 +231,7 @@ export default function AboutPage() {
           {SERVICES.map((service) => (
             <div
               key={service.title}
-              className="rounded-2xl border border-line bg-card/85 p-5 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-accent/50 hover:shadow-xl hover:shadow-accent/[0.07] dark:hover:shadow-accent/[0.12]"
+              className="rounded-2xl border border-line bg-card/85 p-5 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-accent/50 hover:shadow-xl hover:shadow-accent/[0.07]"
             >
               <h3 className="text-sm font-semibold">{service.title}</h3>
               <p className="mt-2 text-sm leading-6 text-muted-fg">

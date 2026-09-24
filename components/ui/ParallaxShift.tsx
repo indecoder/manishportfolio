@@ -13,10 +13,9 @@ type ParallaxShiftProps = {
 };
 
 /**
- * Bidirectional scroll parallax for a CONTENT block. Unlike ParallaxLayer
- * (decorative only, one-directional), this shifts its children both entering
- * and leaving the viewport, relative to the viewport centre, so the motion is
- * obvious during a normal scroll.
+ * Bidirectional scroll parallax for a CONTENT block: shifts its children both
+ * entering and leaving the viewport, relative to the viewport centre, so the
+ * motion is obvious during a normal scroll.
  *
  * Keep `speed` small (0.04-0.08) and `maxShift` tight (<=48px) whenever text
  * is inside: the block drifts as a unit, so it reads as depth rather than

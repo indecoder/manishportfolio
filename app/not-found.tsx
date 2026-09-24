@@ -1,6 +1,5 @@
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
-import { ParallaxBackdrop } from "@/components/ui/ParallaxBackdrop";
 import { ParallaxShift } from "@/components/ui/ParallaxShift";
 
 /**
@@ -11,14 +10,12 @@ import { ParallaxShift } from "@/components/ui/ParallaxShift";
 export default function NotFound() {
   return (
     <section className="relative overflow-hidden">
-      <ParallaxBackdrop side="center" speed={0.12} size={24} />
-
       <Container wide className="relative flex flex-col items-center gap-5 py-28 text-center sm:py-36">
         {/* The numeral is aria-hidden decoration, so it can drift freely. */}
         <ParallaxShift speed={0.08} maxShift={44}>
           <p
             aria-hidden
-            className="text-gradient text-7xl font-bold tracking-tight sm:text-8xl"
+            className="text-7xl font-bold tracking-tight text-line sm:text-8xl"
           >
             404
           </p>

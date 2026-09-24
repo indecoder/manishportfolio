@@ -1,67 +1,50 @@
 import Link from "next/link";
 import type { ProjectMeta } from "@/lib/projects";
 import { ProjectCard } from "@/components/projects/ProjectCard";
-import { ParallaxBackdrop } from "@/components/ui/ParallaxBackdrop";
-import { ParallaxShift } from "@/components/ui/ParallaxShift";
-import { Reveal } from "@/components/ui/Reveal";
+import { RevealGroup } from "@/components/ui/RevealGroup";
 
-/** "Selected projects" section on the home page. */
+/**
+ * "Selected projects" section on the home page.
+ *
+ * The whole section sits inside one RevealGroup: the header and every card
+ * wrapper carry `data-reveal`, so they fade up in sequence (0.1s apart) as the
+ * grid scrolls into view. Animating the *wrapper* rather than the card keeps
+ * the card's own `hover:-translate-y-1` working, because GSAP would otherwise
+ * leave an inline transform behind that beats the hover class.
+ */
 export function ProjectGrid({ projects }: { projects: ProjectMeta[] }) {
   if (projects.length === 0) return null;
 
   return (
-    <section className="relative overflow-hidden py-16">
-      <ParallaxBackdrop side="left" speed={0.12} />
+    <section className="relative overflow-hidden py-20 sm:py-24 lg:py-32">
 
-      <div className="relative">
-        <Reveal>
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
-                Portfolio
-              </p>
-              <h2 className="mt-2 text-3xl font-bold tracking-tight">
-                Selected projects
-              </h2>
-            </div>
-            <Link
-              href="/projects"
-              className="group font-mono text-xs text-muted-fg transition-colors hover:text-accent"
+      <RevealGroup className="relative">
+        <div data-reveal className="flex items-end justify-between gap-4">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            Selected projects
+          </h2>
+          <Link
+            href="/projects"
+            className="group shrink-0 text-sm font-medium text-gray-600 transition-colors hover:text-blue-600"
+          >
+            See all projects{" "}
+            <span
+              aria-hidden
+              className="inline-block transition-transform duration-200 group-hover:translate-x-1"
             >
-              All projects{" "}
-              <span
-                aria-hidden
-                className="inline-block transition-transform duration-200 group-hover:translate-x-1"
-              >
-                →
-              </span>
-            </Link>
-          </div>
-        </Reveal>
-
-        {/* Two-column split parallax: the columns drift at different rates as
-            the section passes, so the grid visibly separates into layers. */}
-        <div className="mt-8 grid items-start gap-5 sm:grid-cols-2">
-          <ParallaxShift speed={0.04} maxShift={26} className="grid gap-5">
-            {projects
-              .filter((_, index) => index % 2 === 0)
-              .map((project, index) => (
-                <Reveal key={project.slug} delay={index * 160}>
-                  <ProjectCard project={project} />
-                </Reveal>
-              ))}
-          </ParallaxShift>
-          <ParallaxShift speed={0.07} maxShift={44} className="grid gap-5 sm:mt-10">
-            {projects
-              .filter((_, index) => index % 2 === 1)
-              .map((project, index) => (
-                <Reveal key={project.slug} delay={index * 160 + 80}>
-                  <ProjectCard project={project} />
-                </Reveal>
-              ))}
-          </ParallaxShift>
+              →
+            </span>
+          </Link>
         </div>
-      </div>
+
+        <div className="mt-10 grid gap-6 sm:grid-cols-2">
+          {projects.map((project) => (
+            <div key={project.slug} data-reveal className="h-full">
+              <ProjectCard project={project} />
+            </div>
+          ))}
+        </div>
+      </RevealGroup>
     </section>
   );
 }

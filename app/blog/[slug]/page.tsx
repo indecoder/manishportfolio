@@ -118,9 +118,9 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         )}
 
-        <div className="prose">
-          <Content />
-        </div>
+        {/* No `.prose` wrapper: @tailwindcss/typography is not installed and
+            every element is styled directly by mdx-components.tsx. */}
+        <Content />
 
         <footer className="mt-12 space-y-8 border-t border-line pt-8">
           <ShareLinks slug={meta.slug} title={meta.title} />

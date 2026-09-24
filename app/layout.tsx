@@ -12,6 +12,8 @@ import {
 } from "@/lib/site";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { SmoothScroll } from "@/components/site/SmoothScroll";
+import { GlobalBackground } from "@/components/ui/GlobalBackground";
 import { jsonLdToString, personJsonLd, websiteJsonLd } from "@/lib/seo";
 
 const geistSans = Geist({
@@ -25,13 +27,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   display: "swap",
 });
-
-/**
- * Applies the saved (or system) theme before first paint so there is no flash
- * of the wrong colour scheme. Runs inline in <body> because a statically
- * exported page cannot decide this on a server.
- */
-const themeScript = `(function(){try{var s=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var dark=s?s==='dark':d;document.documentElement.classList.toggle('dark',dark);}catch(e){}})();`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -114,24 +109,28 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b0d10" },
-  ],
+  /** Light-only site: one browser-chrome colour, no scheme switching. */
+  themeColor: site.themeColor,
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang={site.locale} suppressHydrationWarning>
+    /* `colorScheme: light` keeps UA widgets (scrollbars, form controls, the
+       default `color-scheme` canvas) on the light palette. There is no dark
+       theme on this site, so nothing needs to be decided before first paint
+       and no `suppressHydrationWarning` is required. */
+    <html lang={site.locale} style={{ colorScheme: "light" }}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} flex min-h-dvh flex-col bg-bg font-sans text-fg antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} flex min-h-dvh flex-col bg-white font-sans text-gray-900 antialiased`}
       >
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {/* Lenis smooth scrolling, driven by the GSAP ticker. Renders nothing. */}
+        <SmoothScroll />
 
-        {/* Fixed site ambience: faint accent aurora behind every route. */}
-        <div aria-hidden className="aurora" />
+        {/* One fixed, animated background layer for every route: content
+            scrolls over it and the glass cards let it read through. */}
+        <GlobalBackground />
 
         <a href="#main" className="skip-link">
           Skip to content
