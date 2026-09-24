@@ -34,7 +34,7 @@ export default async function TagPage({ params }: Props) {
   const allTags = await getAllTags();
 
   return (
-    <Container className="py-14">
+    <Container wide className="py-14">
       <nav aria-label="Breadcrumb" className="mb-6">
         <ol className="flex flex-wrap items-center gap-1.5 font-mono text-xs text-muted-fg">
           <li>
@@ -65,12 +65,12 @@ export default async function TagPage({ params }: Props) {
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
           {posts.length} {posts.length === 1 ? "post" : "posts"}
         </p>
-        <h1 className="mt-3 text-4xl font-bold tracking-tight">
+        <h1 className="mt-3 text-balance text-4xl font-bold tracking-tight sm:text-5xl">
           Posts tagged <span className="text-accent">#{tag}</span>
         </h1>
       </header>
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {posts.map((post) => (
           <PostCard key={post.slug} post={post} />
         ))}

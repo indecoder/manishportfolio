@@ -10,7 +10,7 @@ every page prerendered to plain HTML.
 | --- | --- |
 | Framework | Next.js 16 (App Router, `output: "export"`) |
 | Language | TypeScript 5 (strict) |
-| Styling | Tailwind CSS v4 (CSS-first config, class-based dark mode) |
+| Styling | Tailwind CSS v4 (CSS-first config, light-mode only) |
 | Content | MDX compiled at build time with `@mdx-js/mdx` |
 | Markdown | `remark-gfm`, `rehype-slug`, `rehype-autolink-headings`, `rehype-pretty-code` (Shiki), `reading-time` |
 | Hosting | Firebase Hosting (static, global CDN) |
@@ -43,7 +43,7 @@ npm run dev      # http://localhost:3000
 app/
   layout.tsx            # fonts, metadata, theme script, JSON-LD
   page.tsx              # home: hero, projects, latest posts, contact
-  globals.css           # Tailwind v4 theme tokens + dark mode + Shiki
+  globals.css           # Tailwind v4 theme tokens (light-only) + Shiki
   sitemap.ts            # -> out/sitemap.xml
   robots.ts             # -> out/robots.txt
   manifest.ts           # -> out/manifest.webmanifest

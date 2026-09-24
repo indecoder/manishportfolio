@@ -3,10 +3,10 @@ import type { ComponentProps, ReactNode } from "react";
 /**
  * Renders the <pre> produced by `rehype-pretty-code`.
  *
- * Because we pass TWO themes ({ light, dark }) to rehype-pretty-code, Shiki
- * emits a single code block whose colours are CSS custom properties
- * (--shiki-light / --shiki-dark). globals.css swaps them based on the `.dark`
- * class - no duplicated DOM, no client-side JS.
+ * `lib/mdx.ts` passes ONE theme (`github-light`) to rehype-pretty-code, so
+ * Shiki emits token colours as inline styles — no custom properties, no
+ * `.dark` swap. This site is light-mode only; globals.css only has to
+ * neutralise the <pre> box, which it does under `pre[data-language]`.
  *
  * Intentionally a Server Component: keeping the MDX tree free of client
  * components guarantees the runtime MDX evaluation stays RSC-safe.
