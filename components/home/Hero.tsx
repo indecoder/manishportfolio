@@ -3,18 +3,20 @@ import { Button } from "@/components/ui/Button";
 import { SocialLinks } from "@/components/site/SocialLinks";
 import { HeroBackdrop } from "@/components/home/HeroBackdrop";
 import { HeroPortrait } from "@/components/home/HeroPortrait";
+import { ParallaxShift } from "@/components/ui/ParallaxShift";
 
 /**
  * Home hero: a sell-first pitch. Availability, an outcome headline, proof and
  * a single next step - plus a framed portrait so the page sells a person, not
  * just text.
  *
- * Motion lives in the backdrop only: counter-scrolling glow orbs, a static
- * accent wash, and a halo trailing the pointer (HeroBackdrop), plus 3D tilt on
- * the portrait card (HeroPortrait). The content column never moves - static
- * content against moving layers is what makes parallax read as depth instead
- * of smear. Everything is lerp/rAF CSS-transform motion, aria-hidden, and
- * inert under prefers-reduced-motion.
+ * Motion: the backdrop counter-scrolls (glow orbs, accent wash, pointer halo
+ * in HeroBackdrop), the portrait drifts slower than the page on scroll away
+ * (ParallaxShift), and the portrait card tilts in 3D (HeroPortrait). The
+ * text column itself never moves - static content against moving layers is
+ * what makes parallax read as depth instead of smear. Everything is
+ * rAF/CSS-transform motion, aria-hidden or transform-only, and inert under
+ * prefers-reduced-motion.
  */
 export function Hero() {
   return (
@@ -88,7 +90,11 @@ export function Hero() {
           />
         </div>
 
-        <HeroPortrait />
+        {/* Portrait drifts slower than the page as you scroll away - visible
+            depth without ever moving the headline. */}
+        <ParallaxShift speed={0.05} maxShift={36}>
+          <HeroPortrait />
+        </ParallaxShift>
       </div>
 
       {/* Scroll cue: hints the parallax layers below without stealing focus. */}

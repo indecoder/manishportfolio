@@ -1,6 +1,7 @@
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { ParallaxBackdrop } from "@/components/ui/ParallaxBackdrop";
+import { ParallaxShift } from "@/components/ui/ParallaxShift";
 
 /**
  * Rendered to out/404.html by the static export. Firebase Hosting serves this
@@ -13,12 +14,15 @@ export default function NotFound() {
       <ParallaxBackdrop side="center" speed={0.12} size={24} />
 
       <Container wide className="relative flex flex-col items-center gap-5 py-28 text-center sm:py-36">
-        <p
-          aria-hidden
-          className="text-gradient text-7xl font-bold tracking-tight sm:text-8xl"
-        >
-          404
-        </p>
+        {/* The numeral is aria-hidden decoration, so it can drift freely. */}
+        <ParallaxShift speed={0.08} maxShift={44}>
+          <p
+            aria-hidden
+            className="text-gradient text-7xl font-bold tracking-tight sm:text-8xl"
+          >
+            404
+          </p>
+        </ParallaxShift>
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
           Error 404
         </p>

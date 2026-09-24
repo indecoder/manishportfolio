@@ -238,17 +238,18 @@ h3:hover .heading-anchor,
   -webkit-mask-image: linear-gradient(to bottom, black, transparent 65%);
 }
 
-/* Accent glow orbs (HeroBackdrop). Large blur + strong opacity so they read
-   as light in BOTH themes - the earlier 3%/6% versions were invisible on
-   light backgrounds. The parallax transform sits on the ParallaxLayer
-   wrapper, this animation on the orb itself, so they never collide. */
+/* Accent glow orbs (HeroBackdrop, ParallaxBackdrop). Large blur + strong
+   opacity so they read as light in BOTH themes - the earlier 3%/6% versions
+   were invisible on light backgrounds. The parallax transform sits on the
+   ParallaxLayer wrapper, this animation on the orb itself, so they never
+   collide. */
 .glow-orb {
   border-radius: 9999px;
-  filter: blur(52px);
+  filter: blur(48px);
   background: radial-gradient(
     closest-side,
-    color-mix(in oklab, var(--accent) 30%, transparent),
-    color-mix(in oklab, var(--accent) 8%, transparent) 55%,
+    color-mix(in oklab, var(--accent) 45%, transparent),
+    color-mix(in oklab, var(--accent) 14%, transparent) 55%,
     transparent 78%
   );
 }
