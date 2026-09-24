@@ -19,7 +19,7 @@ export default async function HomePage() {
   ]);
 
   return (
-    <Container>
+    <Container wide>
       <Hero />
       <ProjectGrid projects={projects} />
       <LatestPosts posts={posts} />

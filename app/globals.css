@@ -66,6 +66,75 @@
 }
 
 /* ------------------------------------------------------------------ */
+/* Site ambience + shared surface treatments                           */
+/* ------------------------------------------------------------------ */
+
+/* Faint fixed aurora behind the whole page. Softer than the hero mesh so it
+   reads as atmosphere on every route, in both themes. */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(
+      40rem 26rem at 85% -5%,
+      color-mix(in oklab, var(--accent) 9%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      36rem 24rem at -10% 40%,
+      color-mix(in oklab, var(--accent) 6%, transparent),
+      transparent 55%
+    );
+}
+
+/* Gradient hairline: replaces flat borders on premium surfaces (header,
+   footer, feature cards). Fades out at the edges so it never looks boxed. */
+.hairline {
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--accent) 45%, transparent),
+    color-mix(in oklab, var(--fg) 14%, transparent),
+    transparent
+  );
+}
+
+/* Accent gradient text for headline emphasis spans. */
+.text-gradient {
+  background-image: linear-gradient(
+    100deg,
+    var(--accent),
+    color-mix(in oklab, var(--accent) 55%, var(--fg))
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Reading-progress hairline under the sticky header (ScrollProgress). */
+.scroll-progress {
+  background-image: linear-gradient(90deg, var(--accent), transparent 90%);
+}
+
+/* One-shot scroll reveal (components/ui/Reveal.tsx). Starts hidden, animates
+   in when the IntersectionObserver fires, then stays. Under reduced motion
+   the observer never runs, so the element must be visible by default there. */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity 600ms ease-out,
+    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ------------------------------------------------------------------ */
 /* Inline code (block code is handled by rehype-pretty-code below)     */
 /* ------------------------------------------------------------------ */
 :not(pre) > code {
@@ -139,15 +208,29 @@ h3:hover .heading-anchor,
 }
 
 /* ------------------------------------------------------------------ */
-/* Hero backdrop + scroll-reveal motion                                 */
-/* (components/home/HeroBackdrop.tsx, components/ui/Reveal.tsx)         */
+/* Home hero (components/home/Hero.tsx)                                */
 /* ------------------------------------------------------------------ */
 
-/* Faint dotted grid behind the hero; fades out towards the fold so it never
-   fights the heading for attention. Uses --fg so it adapts to both themes. */
+/* Static two-stop accent wash behind the hero, under the parallax orbs. */
+.hero-mesh {
+  background-image:
+    radial-gradient(
+      28rem 20rem at 12% 6%,
+      color-mix(in oklab, var(--accent) 16%, transparent),
+      transparent 65%
+    ),
+    radial-gradient(
+      30rem 22rem at 88% 92%,
+      color-mix(in oklab, var(--accent) 10%, transparent),
+      transparent 60%
+    );
+}
+
+/* Faint dotted grid; fades out towards the fold so it never fights the
+   heading. Uses --fg so it adapts to both themes. */
 .dot-grid {
   background-image: radial-gradient(
-    color-mix(in oklab, var(--fg) 12%, transparent) 1px,
+    color-mix(in oklab, var(--fg) 10%, transparent) 1px,
     transparent 1px
   );
   background-size: 22px 22px;
@@ -155,9 +238,22 @@ h3:hover .heading-anchor,
   -webkit-mask-image: linear-gradient(to bottom, black, transparent 65%);
 }
 
-/* Slow orb breathing. The parallax transform sits on the outer wrapper
-   (HeroBackdrop), this animation on the inner element, so the two never fight
-   over the same transform property. */
+/* Accent glow orbs (HeroBackdrop, ParallaxBackdrop). Large blur + strong
+   opacity so they read as light in BOTH themes - the earlier 3%/6% versions
+   were invisible on light backgrounds. The parallax transform sits on the
+   ParallaxLayer wrapper, this animation on the orb itself, so they never
+   collide. */
+.glow-orb {
+  border-radius: 9999px;
+  filter: blur(48px);
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--accent) 45%, transparent),
+    color-mix(in oklab, var(--accent) 14%, transparent) 55%,
+    transparent 78%
+  );
+}
+
 @keyframes orb-drift-a {
   0%,
   100% {
@@ -188,20 +284,72 @@ h3:hover .heading-anchor,
   animation: orb-drift-b 22s ease-in-out infinite;
 }
 
-/* Scroll-reveal: starts hidden, animates in when the IntersectionObserver
-   fires. Below-the-fold use only — the hero renders visible so it never
-   delays first paint. */
-.reveal {
+/* Entrance only: each hero block fades up once, staggered through an inline
+   animation-delay. Runs on CSS alone (no JS, no scroll listener). */
+.hero-enter {
   opacity: 0;
-  transform: translate3d(0, 16px, 0);
-  transition:
-    opacity 550ms ease-out,
-    transform 550ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: hero-enter 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.reveal-visible {
-  opacity: 1;
-  transform: none;
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Scroll cue under the hero: a dot sliding down a small pill, looping. */
+.scroll-cue-dot {
+  animation: scroll-cue 1.8s ease-in-out infinite;
+}
+
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  70% {
+    transform: translateY(1rem);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+}
+
+/* Availability pill dot: a soft ping behind a solid dot. */
+.availability-dot {
+  position: relative;
+}
+
+.availability-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background-color: #22c55e;
+  animation: availability-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes availability-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  80%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -209,12 +357,32 @@ h3:hover .heading-anchor,
     scroll-behavior: auto;
   }
 
-  /* Reveal must never depend on JS firing: with motion reduced the content is
-     simply there, immediately. */
+  /* Entrance and ping must never depend on animation running. */
+  .hero-enter {
+    opacity: 1;
+    animation: none;
+  }
+
+  .availability-dot::after {
+    animation: none;
+  }
+
+  /* Reveals never depend on the observer firing: content is simply there. */
   .reveal {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+
+  /* Parallax layers freeze where they started (JS listeners also no-op). */
+  .glow-orb,
+  .orb-drift-a,
+  .orb-drift-b {
+    animation: none;
+  }
+
+  .scroll-cue-dot {
+    animation: none;
   }
 
   *,

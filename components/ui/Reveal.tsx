@@ -1,45 +1,47 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ElementType, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
+type RevealProps = {
+  children: ReactNode;
+  /** Stagger offset in ms when several reveals share a section. */
+  delay?: number;
+  className?: string;
+  as?: ElementType;
+};
+
 /**
- * Fades children up into view the first time they enter the viewport.
+ * One-shot scroll reveal: content fades up the first time it enters the
+ * viewport, then stays put (single IntersectionObserver, unobserved after
+ * firing - no per-frame work).
  *
- * Server-rendered as hidden, so use it for below-the-fold content only —
- * anything above the fold would delay first paint for no benefit. With
- * prefers-reduced-motion the CSS shows the content immediately and this
- * observer only resolves the state harmlessly.
+ * Under prefers-reduced-motion the observer never starts and the CSS keeps
+ * the element fully visible, so content never depends on JS to appear.
  */
 export function Reveal({
   children,
-  className,
   delay = 0,
-}: {
-  children: ReactNode;
-  className?: string;
-  /** Stagger in ms — pass index * 70 for a list of siblings. */
-  delay?: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+  className,
+  as: Tag = "div",
+}: RevealProps) {
+  const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            setVisible(true);
-            observer.disconnect();
+            entry.target.classList.add("reveal-visible");
+            observer.unobserve(entry.target);
           }
         }
       },
-      // Trigger once the element is comfortably inside the viewport.
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.05 },
+      { threshold: 0.15, rootMargin: "0px 0px -40px 0px" },
     );
 
     observer.observe(el);
@@ -47,12 +49,12 @@ export function Reveal({
   }, []);
 
   return (
-    <div
+    <Tag
       ref={ref}
-      className={cn("reveal", visible && "reveal-visible", className)}
+      className={cn("reveal", className)}
       style={delay ? { transitionDelay: `${delay}ms` } : undefined}
     >
       {children}
-    </div>
+    </Tag>
   );
 }

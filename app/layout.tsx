@@ -130,6 +130,9 @@ export default function RootLayout({
       >
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
 
+        {/* Fixed site ambience: faint accent aurora behind every route. */}
+        <div aria-hidden className="aurora" />
+
         <a href="#main" className="skip-link">
           Skip to content
         </a>

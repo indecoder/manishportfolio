@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { SocialLinks } from "@/components/site/SocialLinks";
+import { ParallaxBackdrop } from "@/components/ui/ParallaxBackdrop";
 import { site } from "@/lib/site";
 import { jsonLdToString, personJsonLd } from "@/lib/seo";
 
@@ -178,34 +179,42 @@ const AWARDS = [
 
 export default function AboutPage() {
   return (
-    <Container className="py-14">
-      <header className="flex flex-col gap-6 sm:flex-row sm:items-center">
-        <Image
-          src={site.author.avatar}
-          alt={site.author.name}
-          width={96}
-          height={96}
-          priority
-          className="rounded-2xl border border-line object-cover"
-        />
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight">
-            About {site.author.name}
-          </h1>
-          <p className="mt-2 text-base text-muted-fg">
-            {site.author.role} · {site.author.location}
-          </p>
-          <div className="mt-3">
-            <SocialLinks links={site.socialLinks} />
+    <>
+      <header className="relative overflow-hidden pb-8 pt-14 sm:pt-16">
+        <ParallaxBackdrop side="right" speed={0.1} size={22} />
+
+        <Container wide className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
+          <Image
+            src={site.author.avatar}
+            alt={site.author.name}
+            width={96}
+            height={96}
+            priority
+            className="rounded-2xl border border-line object-cover shadow-lg shadow-accent/10"
+          />
+          <div>
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
+              About
+            </p>
+            <h1 className="mt-2 text-balance text-4xl font-bold tracking-tight sm:text-5xl">
+              About <span className="text-gradient">{site.author.name}</span>
+            </h1>
+            <p className="mt-2 text-base text-muted-fg">
+              {site.author.role} · {site.author.location}
+            </p>
+            <div className="mt-3">
+              <SocialLinks links={site.socialLinks} />
+            </div>
           </div>
-        </div>
+        </Container>
       </header>
 
+      <Container className="pb-14">
       <section aria-labelledby="bio" className="mt-10 max-w-2xl">
         <h2 id="bio" className="sr-only">
           Biography
         </h2>
-        <div className="space-y-4">
+        <div className="space-y-4 border-l-2 border-accent/30 pl-5">
           {BIO.map((paragraph) => (
             <p key={paragraph} className="text-base leading-7 text-muted-fg">
               {paragraph}
@@ -225,7 +234,7 @@ export default function AboutPage() {
           {SERVICES.map((service) => (
             <div
               key={service.title}
-              className="rounded-2xl border border-line bg-card p-5"
+              className="rounded-2xl border border-line bg-card/85 p-5 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-accent/50 hover:shadow-xl hover:shadow-accent/[0.07] dark:hover:shadow-accent/[0.12]"
             >
               <h3 className="text-sm font-semibold">{service.title}</h3>
               <p className="mt-2 text-sm leading-6 text-muted-fg">
@@ -395,6 +404,7 @@ export default function AboutPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdToString(personJsonLd()) }}
       />
-    </Container>
+      </Container>
+    </>
   );
 }
