@@ -1,0 +1,93 @@
+---
+title: "Portfolio & blog platform"
+date: "2026-09-23"
+description: "A statically exported Next.js portfolio and MDX blog with build-time SEO, RSS, client-side search, and a dev/uat/prod delivery pipeline on Firebase Hosting for zero cost."
+tags: ["nextjs", "mdx", "firebase", "ci-cd"]
+stack: ["Next.js", "TypeScript", "MDX", "Tailwind CSS", "Firebase Hosting", "GitHub Actions"]
+role: "Solo developer"
+period: "2026"
+order: 1
+featured: true
+live: "https://fullstackmanish.web.app"
+repo: "https://github.com/indecoder/myportfolioandblog"
+highlights:
+  - "Static export: every route is prerendered to HTML, so there is no server cost and no cold start"
+  - "MDX compiled at build time with @mdx-js/mdx - the browser never downloads a Markdown parser"
+  - "Full SEO surface per page: metadata, OpenGraph, Twitter cards, canonical tags and JSON-LD"
+  - "sitemap.xml, robots.txt and rss.xml produced automatically during the build"
+  - "Draft content filtered out of pages, sitemap and feeds"
+  - "dev / uat / prod stages, each on its own Hosting site and promoted by tag, with non-production builds noindexed"
+draft: false
+---
+
+## The problem
+
+Portfolio sites usually end up either too heavy (a CMS, a database, a server) or
+too thin (a single page with no way to publish writing). I wanted something that
+could hold both case studies and long-form articles, load instantly, and cost
+nothing to run.
+
+## The approach
+
+Next.js in static export mode produces plain HTML. MDX gives content the ability
+to include React components - callouts, syntax-highlighted code, responsive
+images - without leaving Markdown.
+
+```ts filename="lib/mdx.ts"
+const { default: Content } = await evaluate(content, {
+  ...baseMdxOptions,
+  useImportSource: true,
+  providerImportSource: "@/mdx-components",
+});
+```
+
+The component map lives in `mdx-components.tsx` and is injected as a JSX import
+source, so MDX files never need import statements.
+
+## SEO
+
+Every page defines metadata through the Next.js Metadata API, which renders
+`<title>`, description, canonical, OpenGraph and Twitter tags. On top of that:
+
+- `BlogPosting`, `SoftwareApplication`, `WebSite`, `Person`, `BreadcrumbList`
+  and `ItemList` JSON-LD are emitted per page type
+- `sitemap.xml` lists only published content
+- drafts are excluded everywhere automatically
+
+## Deployment
+
+Three stages, each on its own Firebase Hosting site inside one project, promoted
+by tag:
+
+| Stage | Trigger | Hosting site | Indexable |
+| --- | --- | --- | --- |
+| `dev` | push to `develop` | `fullstackmanish-dev` | no |
+| `uat` | push to `main` | `fullstackmanish-uat` | no |
+| `prod` | tag `v*` | `fullstackmanish` | yes |
+
+Every stage value lives in one file, `env.config.mjs`. Because this is a static
+export, the environment is baked into the HTML at build time - there is no
+server left to read a runtime variable - so `scripts/build.mjs` produces one
+build per stage and verifies that the output carries that stage's origin and no
+other stage's.
+
+```bash
+npm run build:uat      # ./out with UAT URLs baked in
+npm run deploy:uat
+```
+
+Deploys are scoped with `firebase deploy --only hosting:<site>`, so a dev deploy
+is physically incapable of touching production, and `scripts/deploy.mjs` refuses
+to upload an `out/` that was built for a different stage.
+
+<Callout type="warn" title="Noindex on purpose">
+dev and UAT serve identical content on different origins. Left indexable they
+would compete with production as duplicate content, so those builds emit
+`noindex, nofollow`, disallow everything in `robots.txt` and publish an empty
+sitemap.
+</Callout>
+
+<Callout type="info" title="Cost">
+Firebase Hosting's free tier covers 10 GB storage and 360 MB/day of egress -
+far more than a personal site needs.
+</Callout>

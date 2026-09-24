@@ -1,0 +1,77 @@
+---
+title: "Hello world: how this portfolio and blog is built"
+date: "2026-09-20"
+description: "A tour of the stack behind this site - Next.js 16 static export, MDX content, Tailwind v4, and how it is deployed to Firebase Hosting for free."
+tags: ["nextjs", "mdx", "tailwind", "firebase"]
+featured: true
+draft: false
+---
+
+This site is a statically exported Next.js app deployed to Firebase Hosting. It
+costs **zero dollars a month** and every page is a plain HTML file, which is why
+it scores well on Core Web Vitals and gets indexed quickly.
+
+## Why static export
+
+`output: "export"` in `next.config.ts` makes Next.js emit an `out/` directory of
+HTML, CSS and JS. Firebase Hosting serves that directory from Google's CDN. No
+Node runtime, no cold starts, no bill.
+
+```ts filename="next.config.ts" {3}
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  output: "export",
+  images: { unoptimized: true },
+  trailingSlash: false,
+};
+
+export default nextConfig;
+```
+
+<Callout type="info" title="The one trade-off">
+Static export means no server-side features: no API routes, no `next/image`
+optimization and no on-demand revalidation. Everything must be known at build
+time, which is why each dynamic route exports `generateStaticParams`.
+</Callout>
+
+## Content is MDX
+
+Posts live in `content/blog/*.mdx`. Frontmatter is parsed with `gray-matter`,
+the body is compiled at build time by `@mdx-js/mdx`, and custom components are
+injected as a JSX import source - so MDX never has to import them.
+
+| Concern | Tool |
+| --- | --- |
+| Frontmatter | `gray-matter` |
+| Compilation | `@mdx-js/mdx` `evaluate` |
+| Tables, task lists | `remark-gfm` |
+| Syntax highlighting | `rehype-pretty-code` + Shiki |
+| Heading IDs | `rehype-slug` + `rehype-autolink-headings` |
+| Reading time | `reading-time` |
+
+Because compilation happens at build time, the browser never downloads a
+Markdown parser. The `<Content />` component is already JavaScript.
+
+## Deployment
+
+Three environments, each on its own Firebase Hosting site: `develop` publishes to
+dev, `main` publishes to UAT, and a `v*` tag publishes to production. Pull
+requests get a temporary preview channel on the dev site.
+
+```bash filename="Terminal"
+git push origin develop             # dev
+git push origin main                # UAT
+git tag v1.0.0 && git push --tags   # production
+```
+
+Deploys run the `firebase-tools` CLI scoped to a single site
+(`--only hosting:<site>`) rather than using a hosting deploy action, because that
+action would deploy every site listed in `firebase.json` at once.
+
+<Callout type="success" title="Why separate stages">
+A static export freezes the environment into the HTML at build time, so a
+separate build per stage is the only way to get correct canonical URLs anywhere
+other than production. It also means the production site is only ever one tag
+away, and dev can never overwrite it.
+</Callout>

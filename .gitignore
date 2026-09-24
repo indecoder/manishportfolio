@@ -1,0 +1,57 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# production
+/build
+
+# firebase
+.firebase
+.firebase/
+.firebaserc.bak
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+install.log
+build.log
+# Service-account keys are long-lived credentials. A key downloaded from
+# IAM & Admin lands in this directory by default, so it is ignored here rather
+# than relying on it being moved elsewhere before `git add`.
+*-key.json
+*service-account*.json
+*.credentials.json
+google-application-credentials*.json
+
+# misc
+.DS_Store
+*.pem
+.vercel
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files - never commit secrets
+.env
+.env*.local
+.env.production
+# Machine-readable env resolved by scripts/apply-env.mjs for CI to consume.
+# Regenerated on every build, so it must never be committed.
+.env.deploy.json
+
+# typescript
+*.tsbuildinfo
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json

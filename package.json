@@ -1,0 +1,67 @@
+{
+  "name": "myportfolioandblog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Personal portfolio + MDX blog. Statically exported and deployed to Firebase Hosting (Spark / free tier).",
+  "scripts": {
+    "dev": "next dev",
+
+    "// env": "Applies a stage's variables to .env.local. See env.config.mjs.",
+    "env:dev": "node scripts/apply-env.mjs dev",
+    "env:uat": "node scripts/apply-env.mjs uat",
+    "env:prod": "node scripts/apply-env.mjs prod",
+
+    "// build": "Static export for one stage. `build` alone means prod. There is deliberately no `postbuild`: scripts/build.mjs runs the RSS/search generators itself with the stage environment applied, and an npm post-hook would re-run them without it.",
+    "build": "node scripts/build.mjs prod",
+    "build:dev": "node scripts/build.mjs dev",
+    "build:uat": "node scripts/build.mjs uat",
+    "build:prod": "node scripts/build.mjs prod",
+
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "generate:og": "node scripts/generate-og-images.mjs",
+    "verify": "npm run lint && npm run typecheck && npm run build",
+    "preview": "npx --yes serve out -l 4173",
+
+    "// firebase": "Pinned firebase-tools wrapper - version lives in env.config.mjs.",
+    "firebase": "node scripts/firebase.mjs",
+    "firebase:sites:list": "node scripts/firebase.mjs hosting:sites:list",
+    "firebase:sites:create:dev": "node scripts/firebase.mjs hosting:sites:create fullstackmanish-dev",
+    "firebase:sites:create:uat": "node scripts/firebase.mjs hosting:sites:create fullstackmanish-uat",
+
+    "// deploy": "Publishes ./out to that stage's own Hosting site. Each script refuses to upload an ./out built for a different stage.",
+    "deploy": "node scripts/deploy.mjs prod",
+    "deploy:dev": "node scripts/deploy.mjs dev",
+    "deploy:uat": "node scripts/deploy.mjs uat",
+    "deploy:prod": "node scripts/deploy.mjs prod",
+    "deploy:channel": "node scripts/deploy.mjs dev --channel preview"
+  },
+  "dependencies": {
+    "@mdx-js/mdx": "3.1.1",
+    "@mdx-js/react": "3.1.1",
+    "gray-matter": "4.0.3",
+    "next": "16.3.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "reading-time": "1.5.0",
+    "rehype-autolink-headings": "7.1.0",
+    "rehype-pretty-code": "0.14.5",
+    "rehype-slug": "6.0.0",
+    "remark-gfm": "4.0.1",
+    "shiki": "4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "^22.9.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.3.6",
+    "tailwindcss": "4.3.3",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,0 +1,218 @@
+name: Deploy
+
+# Promotion pipeline. Each stage owns a separate Firebase Hosting site, so a
+# deploy can only ever affect the stage it targets:
+#
+#   pull_request        -> preview channel on the dev site   (throwaway URL)
+#   push to develop     -> dev   fullstackmanish-dev.web.app
+#   push to main        -> uat   fullstackmanish-uat.web.app
+#   push tag v*         -> prod  fullstackmanish.web.app
+#   workflow_dispatch   -> whichever stage you pick
+#
+# Every deploy job runs inside a GitHub ENVIRONMENT named dev / uat / prod.
+# Create those three environments in the repository settings; adding required
+# reviewers to `prod` makes production releases approval-gated with no change
+# to this file.
+#
+# Authentication: the FIREBASE_SERVICE_ACCOUNT secret is written to a file and
+# exposed as GOOGLE_APPLICATION_CREDENTIALS - the CI auth path documented for
+# firebase-tools. The service account needs the Firebase Hosting Admin role.
+on:
+  push:
+    branches: [develop, main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: "Stage to deploy"
+        required: true
+        type: choice
+        default: uat
+        options: [dev, uat, prod]
+
+permissions:
+  contents: read
+  # Needed to comment the preview URL back onto the pull request.
+  pull-requests: write
+
+# One deploy per ref at a time. Tag refs are unique so production releases are
+# never cancelled; branch pushes supersede an in-flight deploy of the same
+# branch, which is what you want for dev/uat.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  resolve:
+    name: Resolve stage
+    runs-on: ubuntu-latest
+    outputs:
+      stage: ${{ steps.resolve.outputs.stage }}
+      channel: ${{ steps.resolve.outputs.channel }}
+
+    steps:
+      - name: Map the trigger to a stage
+        id: resolve
+        env:
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          RUN_ID: ${{ github.run_id }}
+          CHOSEN: ${{ inputs.stage }}
+        run: |
+          set -euo pipefail
+          stage=""
+          channel=""
+
+          case "$EVENT" in
+            pull_request)
+              # Previews are built as dev: noindexed, crawl-disallowed, and they
+              # land on a channel of the dev site so production is untouched.
+              stage="dev"
+              channel="pr-${PR_NUMBER:-$RUN_ID}"
+              ;;
+            push)
+              case "$REF" in
+                refs/heads/develop) stage="dev" ;;
+                refs/heads/main)    stage="uat" ;;
+                refs/tags/v*)       stage="prod" ;;
+                *)                  stage="" ;;
+              esac
+              ;;
+            workflow_dispatch)
+              stage="$CHOSEN"
+              ;;
+          esac
+
+          echo "stage=$stage" >> "$GITHUB_OUTPUT"
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
+          echo "resolved stage='${stage}' channel='${channel}'"
+
+  deploy:
+    name: Deploy (${{ needs.resolve.outputs.stage }})
+    runs-on: ubuntu-latest
+    needs: resolve
+    # Skipped when the trigger maps to no stage (e.g. a push to a feature
+    # branch, which only needs CI).
+    if: needs.resolve.outputs.stage != ''
+    # Runs inside the GitHub Environment matching the stage. Environment-level
+    # variables can override env.config.mjs, and required reviewers on `prod`
+    # gate production releases.
+    environment: ${{ needs.resolve.outputs.stage }}
+    outputs:
+      deploy_url: ${{ steps.publish.outputs.deploy_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Resolve ${{ needs.resolve.outputs.stage }} environment
+        run: node scripts/apply-env.mjs ${{ needs.resolve.outputs.stage }} --no-write
+
+      # Builds ./out with this stage's origin baked in, then verifies that
+      # ./out carries this stage's URLs and no other stage's.
+      - name: Build static site
+        run: npm run build:${{ needs.resolve.outputs.stage }}
+
+      - name: Authenticate Firebase
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          set -euo pipefail
+          if [ -z "$SERVICE_ACCOUNT" ]; then
+            echo "::error::the FIREBASE_SERVICE_ACCOUNT secret is not set for this environment"
+            exit 1
+          fi
+          # Written outside the workspace so it can never be uploaded as a build
+          # artifact or committed by a later step.
+          printf '%s' "$SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-sa.json" >> "$GITHUB_ENV"
+
+      # Exactly one of the next two steps runs. Both are scoped to a single
+      # Hosting site via --only, so no other stage can be affected.
+      - name: Deploy to live site
+        id: deploy_live
+        if: needs.resolve.outputs.channel == ''
+        run: node scripts/deploy.mjs ${{ needs.resolve.outputs.stage }}
+
+      - name: Deploy to preview channel
+        id: deploy_channel
+        if: needs.resolve.outputs.channel != ''
+        run: node scripts/deploy.mjs ${{ needs.resolve.outputs.stage }} --channel ${{ needs.resolve.outputs.channel }}
+
+      - name: Publish deployed URL
+        id: publish
+        run: |
+          echo "deploy_url=${{ steps.deploy_live.outputs.deploy_url || steps.deploy_channel.outputs.deploy_url }}" >> "$GITHUB_OUTPUT"
+
+      # Never leave credential material on the runner.
+      - name: Discard service account key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/firebase-sa.json"
+
+  comment:
+    name: Comment preview URL
+    runs-on: ubuntu-latest
+    needs: [resolve, deploy]
+    if: github.event_name == 'pull_request' && needs.deploy.outputs.deploy_url != ''
+
+    steps:
+      - name: Post or update the preview comment
+        uses: actions/github-script@v7
+        env:
+          PREVIEW_URL: ${{ needs.deploy.outputs.deploy_url }}
+        with:
+          script: |
+            const marker = "<!-- firebase-hosting-preview -->";
+            const url = process.env.PREVIEW_URL;
+            const body = [
+              marker,
+              "### Preview deployment",
+              "",
+              `Built as **dev** (noindexed) and published to a preview channel:`,
+              "",
+              url,
+              "",
+              "The channel expires automatically. This build is not indexable and",
+              "cannot affect production.",
+            ].join("\n");
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find((c) => c.body?.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }

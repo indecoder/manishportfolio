@@ -1,0 +1,100 @@
+---
+title: "Deploying a Next.js static site to Firebase Hosting with GitHub Actions"
+date: "2026-09-22"
+updated: "2026-09-23"
+description: "A complete, free pipeline: Firebase Hosting for a statically exported Next.js app, GitHub Actions for CI and CD, preview channels for pull requests, and Google Search Console for indexing."
+tags: ["firebase", "github-actions", "seo", "nextjs"]
+featured: true
+draft: false
+---
+
+Firebase Hosting is the cheapest sane way to put a static site on a global CDN.
+This is the exact pipeline this site runs on.
+
+## 1. Build output
+
+```bash filename="Terminal"
+npm run build          # production build -> out/
+npm run build:uat      # same code, UAT canonical URLs baked in
+npm run preview        # serves out/ locally on :4173
+```
+
+## 2. Firebase project and sites
+
+One Firebase project can host several **sites**. Give each environment its own,
+so a dev deploy cannot touch production:
+
+```bash filename="Terminal"
+npm run firebase -- login
+npm run firebase -- projects:create my-site
+npm run firebase -- hosting:sites:create my-site-dev
+npm run firebase -- hosting:sites:create my-site-uat
+```
+
+`firebase.json` then lists one entry per site, each with a `target`:
+
+```json filename="firebase.json" {3}
+{
+  "hosting": [
+    { "target": "my-site-dev", "public": "out", "cleanUrls": true },
+    { "target": "my-site",     "public": "out", "cleanUrls": true }
+  ]
+}
+```
+
+`.firebaserc` maps each target name to a site ID, which is what makes
+`--only hosting:<target>` resolve.
+
+<Callout type="warn" title="Deploy one site at a time">
+`firebase deploy --only hosting` deploys **every** site in the project. Always
+name the target - `firebase deploy --only hosting:my-site-dev` - or production
+becomes collateral damage.
+</Callout>
+
+## 3. GitHub Actions
+
+Two workflows:
+
+- **`ci.yml`** - lint, typecheck, and build **every** stage, so a broken dev
+  build cannot hide behind a working production one.
+- **`deploy.yml`** - maps a trigger to a stage, then builds and deploys it inside
+  a matching GitHub **Environment**, so `prod` can require reviewers.
+
+Auth uses a service account: write the JSON to a file and point
+`GOOGLE_APPLICATION_CREDENTIALS` at it. That is the CI path the firebase-tools
+README documents. Note that federated credentials (Workload Identity Federation)
+are not reliably supported by the CLI, so a plain service-account key is the
+boring option that works.
+
+## 4. Free indexing
+
+Three files do the work, all generated at build time:
+
+1. `/sitemap.xml` - every published post and project
+2. `/robots.txt` - allows all crawlers and advertises the sitemap
+3. `/rss.xml` - produced by `scripts/generate-rss.mjs` after the build
+
+Then verify the domain in [Google Search
+Console](https://search.google.com/search-console) and submit the sitemap once.
+New URLs are picked up automatically on the next deploy.
+
+```json filename="app/robots.ts" {5}
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: [{ userAgent: "*", allow: "/", disallow: ["/_next/"] }],
+    sitemap: `${siteUrl}/sitemap.xml`,
+  };
+}
+```
+
+## 5. Structured data
+
+Each post emits `BlogPosting` JSON-LD, projects emit `SoftwareApplication`, and
+every page carries `BreadcrumbList`. The layout emits `WebSite` and `Person`.
+Validate them with the [Rich Results
+Test](https://search.google.com/test/rich-results).
+
+<Callout type="tip" title="Measure before you optimise">
+Run Lighthouse on the deployed URL, not `localhost`. Firebase adds Brotli
+compression and CDN caching that the dev server does not have.
+</Callout>

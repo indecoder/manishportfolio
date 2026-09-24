@@ -1,0 +1,49 @@
+---
+title: "AskHR - an organisation-wide HR chatbot"
+date: "2024-03-01"
+description: "An HR assistant built on IBM Watson that automated routine employee requests such as leave applications and payslip retrieval."
+tags: ["ai", "automation", "ibm-watson", "conversational-ui"]
+stack: ["IBM Watson", "Node.js", "REST APIs", "Conversational Design"]
+role: "AI & Automation Developer"
+period: "2022 – Present"
+order: 3
+featured: true
+highlights:
+  - "Automated routine HR enquiries end to end: leave applications, payslip retrieval"
+  - "Built on IBM Watson AI capabilities and integrated with internal HR systems"
+  - "Cut manual HR overhead by removing repetitive ticket handling"
+draft: false
+---
+
+## The problem
+
+A large share of HR tickets were the same handful of requests, answered the same
+way, every day. Leave balances. Payslip downloads. Policy questions with a
+documented answer that nobody could find. High volume, low judgement.
+
+## What I built
+
+An organisation-wide HR chatbot on **IBM Watson** that resolves those requests
+directly rather than routing them to a human.
+
+The interesting work was not the conversation layer - it was the integration:
+
+- mapping which requests were genuinely automatable versus which needed a human
+- wiring the chatbot to internal HR systems so answers came from source data
+- handling the **failure paths** honestly: when confidence was low or the system
+  was unavailable, the chatbot escalated with context instead of guessing
+
+<Callout type="warn" title="Confidence thresholds are a product decision">
+The temptation is to make the bot answer everything. The version that survived
+contact with real employees was the one that knew when to hand over.
+</Callout>
+
+## Outcome
+
+Routine employee enquiries - leave applications and payslip retrieval among them
+- are now self-service. HR operations got materially less manual overhead, and
+staff got answers in seconds instead of days.
+
+The pattern generalises, which is why this project shaped how I approach AI
+integration generally: **the integrations and the escalation rules are the
+product; the model is a component.**

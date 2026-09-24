@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+/* Class-based dark mode: `dark:` applies inside <html class="dark">. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #ffffff;
+  --fg: #111827;
+  --muted: #f6f7f9;
+  --muted-fg: #6b7280;
+  --line: #e5e7eb;
+  --accent: #2563eb;
+  --accent-fg: #ffffff;
+  --card: #ffffff;
+}
+
+.dark {
+  --bg: #0b0d10;
+  --fg: #e8eaed;
+  --muted: #12161b;
+  --muted-fg: #9aa4af;
+  --line: #1f262e;
+  --accent: #6ea8fe;
+  --accent-fg: #0b0d10;
+  --card: #0f1318;
+}
+
+/* Expose the palette as Tailwind v4 theme tokens: bg-bg, text-fg, border-line… */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-muted-fg: var(--muted-fg);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-card: var(--card);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, "SF Mono",
+    Menlo, Consolas, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv02", "cv03", "cv04";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--accent) 25%, transparent);
+  }
+
+  :focus-visible {
+    outline-color: var(--accent);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Inline code (block code is handled by rehype-pretty-code below)     */
+/* ------------------------------------------------------------------ */
+:not(pre) > code {
+  border: 1px solid var(--line);
+  border-radius: 0.375rem;
+  background-color: var(--muted);
+  padding: 0.1rem 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+/* ------------------------------------------------------------------ */
+/* Shiki dual-theme output from rehype-pretty-code                     */
+/* One DOM tree: colours are CSS variables swapped by `.dark`.         */
+/* ------------------------------------------------------------------ */
+pre[data-language] code span {
+  color: var(--shiki-light);
+  font-style: var(--shiki-light-font-style);
+  font-weight: var(--shiki-light-font-weight);
+}
+
+.dark pre[data-language] code span {
+  color: var(--shiki-dark);
+  font-style: var(--shiki-dark-font-style);
+  font-weight: var(--shiki-dark-font-weight);
+}
+
+pre[data-language] {
+  background-color: transparent;
+}
+
+pre[data-language]:focus {
+  outline: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Heading permalinks injected by rehype-autolink-headings             */
+/* ------------------------------------------------------------------ */
+.heading-anchor {
+  margin-left: 0.4rem;
+  color: var(--muted-fg);
+  font-weight: 400;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+h2:hover .heading-anchor,
+h3:hover .heading-anchor,
+.heading-anchor:focus-visible {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------------ */
+/* Accessibility helpers                                               */
+/* ------------------------------------------------------------------ */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  background-color: var(--accent);
+  color: var(--accent-fg);
+  border-radius: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

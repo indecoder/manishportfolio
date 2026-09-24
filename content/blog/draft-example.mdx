@@ -1,0 +1,18 @@
+---
+title: "This post is a draft and will not be published"
+date: "2026-09-21"
+description: "Demonstrates that draft: true keeps a post out of the build, sitemap and RSS feed."
+tags: ["meta"]
+draft: true
+---
+
+Anything in this file is invisible on the deployed site.
+
+`lib/mdx.ts` filters on `draft`, so this post is excluded from:
+
+- `/blog` and `/blog/[slug]`
+- `app/sitemap.ts`
+- `app/rss.xml.ts`
+- the search index
+
+Set `draft: false` in the frontmatter to publish it.

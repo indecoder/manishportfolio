@@ -1,0 +1,15 @@
+{
+  "// note": "Firebase project ID plus the deploy-target map. `targets` is what lets `firebase deploy --only hosting:<target>` resolve a target name to a concrete Hosting site, which is how scripts/deploy.mjs publishes one stage without touching the others. Target names match the `target` fields in firebase.json and the FIREBASE_HOSTING_SITE values in env.config.mjs - keep all three in sync. GitHub Actions does not read this file (it passes --project explicitly), so it is only used for local deploys.",
+  "projects": {
+    "default": "fullstackmanish"
+  },
+  "targets": {
+    "fullstackmanish": {
+      "hosting": {
+        "fullstackmanish-dev": ["fullstackmanish-dev"],
+        "fullstackmanish-uat": ["fullstackmanish-uat"],
+        "fullstackmanish": ["fullstackmanish"]
+      }
+    }
+  }
+}
