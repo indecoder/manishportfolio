@@ -147,9 +147,9 @@ export default async function ProjectPage({ params }: Props) {
           </section>
         )}
 
-        <div className="prose">
-          <Content />
-        </div>
+        {/* No `.prose` wrapper: @tailwindcss/typography is not installed and
+            every element is styled directly by mdx-components.tsx. */}
+        <Content />
 
         <footer className="mt-12 border-t border-line pt-8">
           <p className="text-sm text-muted-fg">

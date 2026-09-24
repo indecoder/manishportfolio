@@ -12,39 +12,39 @@ export type CalloutType =
 
 const styles: Record<CalloutType, { box: string; label: string; emoji: string }> = {
   note: {
-    box: "border-sky-500/40 bg-sky-500/10",
-    label: "text-sky-600 dark:text-sky-400",
+    box: "border-sky-200 bg-sky-50",
+    label: "text-sky-700",
     emoji: "ℹ️",
   },
   tip: {
-    box: "border-emerald-500/40 bg-emerald-500/10",
-    label: "text-emerald-600 dark:text-emerald-400",
+    box: "border-emerald-200 bg-emerald-50",
+    label: "text-emerald-700",
     emoji: "💡",
   },
   warning: {
-    box: "border-amber-500/40 bg-amber-500/10",
-    label: "text-amber-600 dark:text-amber-400",
+    box: "border-amber-200 bg-amber-50",
+    label: "text-amber-700",
     emoji: "⚠️",
   },
   danger: {
-    box: "border-red-500/40 bg-red-500/10",
-    label: "text-red-600 dark:text-red-400",
+    box: "border-red-200 bg-red-50",
+    label: "text-red-700",
     emoji: "⛔",
   },
   // Aliases, so `type="info"` / `"success"` / `"warn"` read naturally in MDX.
   info: {
-    box: "border-sky-500/40 bg-sky-500/10",
-    label: "text-sky-600 dark:text-sky-400",
+    box: "border-sky-200 bg-sky-50",
+    label: "text-sky-700",
     emoji: "ℹ️",
   },
   success: {
-    box: "border-emerald-500/40 bg-emerald-500/10",
-    label: "text-emerald-600 dark:text-emerald-400",
+    box: "border-emerald-200 bg-emerald-50",
+    label: "text-emerald-700",
     emoji: "✅",
   },
   warn: {
-    box: "border-amber-500/40 bg-amber-500/10",
-    label: "text-amber-600 dark:text-amber-400",
+    box: "border-amber-200 bg-amber-50",
+    label: "text-amber-700",
     emoji: "⚠️",
   },
 };

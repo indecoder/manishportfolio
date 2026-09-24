@@ -30,7 +30,7 @@ export const site = {
   /** Language code for <html lang>. */
   locale: "en",
   /** Used by manifest.json / browser chrome. */
-  themeColor: "#0a0a0a",
+  themeColor: "#ffffff",
 
   author: {
     name: "Manish Kumar",
@@ -48,6 +48,26 @@ export const site = {
     },
     /** Shown on the contact section and used for the mailto: link. */
     email: "manishsharan@protonmail.com",
+    /** Availability pill rendered above the home hero headline. */
+    availability: "Open to work",
+    /**
+     * Hero copy. `heroLead` is the one-line role/location statement that
+     * follows the headline; `heroSupport` adds the employers so the claim is
+     * grounded rather than generic.
+     */
+    heroLead:
+      "Senior Lead Technical Specialist @ Kyndryl in Bengaluru, Karnataka, India.",
+    heroSupport:
+      "Nine years across Kyndryl, Oracle, IBM, Cognizant and Tech Mahindra — leading front-end teams that ship enterprise learning platforms and AI automation.",
+    /**
+     * Compact proof points rendered under the home hero actions: nine years
+     * (bio), twelve projects shipped, five employers named in the bio.
+     */
+    stats: [
+      { value: "9+", label: "Years building" },
+      { value: "12", label: "Projects" },
+      { value: "5", label: "Employers" },
+    ],
     avatar: "/avatar.svg",
     avatarAlt: "Portrait of Manish Kumar",
     resume: "/resume.pdf",
@@ -64,8 +84,25 @@ export const site = {
      */
   },
 
-  /** Header navigation. Order is preserved. */
+  /**
+   * Header navigation. Order is preserved.
+   *
+   * `/about` deliberately stays out of the header (the design keeps four items)
+   * and is reachable from the footer plus the hero bio line.
+   *
+   * "Notes" is intentionally absent: there is no `content/notes` collection yet,
+   * and a nav item pointing at a route the static export never emits would 404.
+   * Add the collection plus `app/notes/page.tsx` first, then list it here.
+   */
   nav: [
+    { label: "Home", href: "/" },
+    { label: "Blog", href: "/blog" },
+    { label: "Projects", href: "/projects" },
+    { label: "Uses", href: "/uses" },
+  ] satisfies NavItem[],
+
+  /** Footer navigation: the header items plus the pages only linked from here. */
+  footerNav: [
     { label: "Home", href: "/" },
     { label: "Blog", href: "/blog" },
     { label: "Projects", href: "/projects" },
