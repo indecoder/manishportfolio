@@ -1,22 +1,25 @@
-import Image from "next/image";
 import { site } from "@/lib/site";
 import { Button } from "@/components/ui/Button";
 import { SocialLinks } from "@/components/site/SocialLinks";
+import { HeroBackdrop } from "@/components/home/HeroBackdrop";
+import { HeroPortrait } from "@/components/home/HeroPortrait";
 
 /**
  * Home hero: a sell-first pitch. Availability, an outcome headline, proof and
  * a single next step - plus a framed portrait so the page sells a person, not
  * just text.
  *
- * Static by design: entrance animation only (CSS, staggered), no scroll
- * listeners. The previous scroll-parallax backdrop is gone - on light
- * backgrounds it read as smudges, and a hero this short never scrolled enough
- * for parallax to be visible anyway.
+ * Motion lives in the backdrop only: counter-scrolling glow orbs, a static
+ * accent wash, and a halo trailing the pointer (HeroBackdrop), plus 3D tilt on
+ * the portrait card (HeroPortrait). The content column never moves - static
+ * content against moving layers is what makes parallax read as depth instead
+ * of smear. Everything is lerp/rAF CSS-transform motion, aria-hidden, and
+ * inert under prefers-reduced-motion.
  */
 export function Hero() {
   return (
     <section className="relative overflow-hidden py-16 sm:py-24">
-      <div aria-hidden className="hero-mesh pointer-events-none absolute inset-0" />
+      <HeroBackdrop />
 
       <div className="relative grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
@@ -85,47 +88,7 @@ export function Hero() {
           />
         </div>
 
-        <figure
-          className="hero-enter relative mx-auto w-full max-w-sm"
-          style={{ animationDelay: "200ms" }}
-        >
-          <div className="relative overflow-hidden rounded-[2rem] border border-line bg-card p-3 shadow-2xl shadow-black/10 dark:shadow-black/50">
-            <Image
-              src={site.author.avatar}
-              alt={site.author.avatarAlt}
-              width={512}
-              height={512}
-              priority
-              className="h-auto w-full rounded-[1.5rem]"
-            />
-            <figcaption className="flex items-center justify-between gap-3 px-2 pb-1 pt-3">
-              <div>
-                <p className="text-sm font-semibold text-fg">
-                  {site.author.name}
-                </p>
-                <p className="font-mono text-xs text-muted-fg">
-                  {site.author.location}
-                </p>
-              </div>
-              <span className="rounded-full bg-accent/15 px-2.5 py-1 font-mono text-[11px] font-medium text-accent">
-                9+ yrs
-              </span>
-            </figcaption>
-          </div>
-
-          <span
-            aria-hidden
-            className="absolute -left-4 top-10 rounded-full border border-line bg-card px-3 py-1 font-mono text-xs text-muted-fg shadow-lg shadow-black/5 dark:shadow-black/40"
-          >
-            React · TypeScript
-          </span>
-          <span
-            aria-hidden
-            className="absolute -right-3 bottom-16 rounded-full border border-line bg-card px-3 py-1 font-mono text-xs text-muted-fg shadow-lg shadow-black/5 dark:shadow-black/40"
-          >
-            MCP · AI automation
-          </span>
-        </figure>
+        <HeroPortrait />
       </div>
     </section>
   );
