@@ -1,28 +1,25 @@
 @import "tailwindcss";
 
-/* Class-based dark mode: `dark:` applies inside <html class="dark">. */
-@custom-variant dark (&:where(.dark, .dark *));
-
+/* ================================================================== */
+/*  Design tokens — this site is LIGHT MODE ONLY.                      */
+/*                                                                    */
+/*  Every value below is the exact colour the design calls for, so a    */
+/*  component can use either the semantic utility (`text-fg`) or the    */
+/*  raw Tailwind palette class (`text-gray-900`) and get the identical  */
+/*  result. The tokens exist for the MDX/prose components, which were   */
+/*  written against the semantic names.                                 */
+/* ================================================================== */
 :root {
-  --bg: #ffffff;
-  --fg: #111827;
-  --muted: #f6f7f9;
-  --muted-fg: #6b7280;
-  --line: #e5e7eb;
-  --accent: #2563eb;
+  --bg: #ffffff; /* bg-white        */
+  --fg: #111827; /* text-gray-900   */
+  --muted: #f9fafb; /* bg-gray-50      */
+  --muted-fg: #4b5563; /* text-gray-600   */
+  --line: #e5e7eb; /* border-gray-200 */
+  --accent: #2563eb; /* bg-blue-600     */
   --accent-fg: #ffffff;
   --card: #ffffff;
-}
-
-.dark {
-  --bg: #0b0d10;
-  --fg: #e8eaed;
-  --muted: #12161b;
-  --muted-fg: #9aa4af;
-  --line: #1f262e;
-  --accent: #6ea8fe;
-  --accent-fg: #0b0d10;
-  --card: #0f1318;
+  --shadow: 15 23 42; /* slate-900 rgb, for alpha shadows */
+  --header-h: 64px; /* sticky header height  */
 }
 
 /* Expose the palette as Tailwind v4 theme tokens: bg-bg, text-fg, border-line… */
@@ -43,7 +40,6 @@
 
 @layer base {
   html {
-    scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
   }
 
@@ -51,26 +47,64 @@
     background-color: var(--bg);
     color: var(--fg);
     font-family: var(--font-sans);
-    font-feature-settings: "cv02", "cv03", "cv04";
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Ambient orbs bleed past the content column; never let them scroll the
+       page sideways. */
+    overflow-x: hidden;
   }
 
   ::selection {
-    background-color: color-mix(in oklab, var(--accent) 25%, transparent);
+    background-color: color-mix(in oklab, var(--accent) 18%, transparent);
+    color: var(--fg);
   }
 
   :focus-visible {
-    outline-color: var(--accent);
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
   }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Lenis smooth scroll — required styles (mirrors lenis/dist/lenis.css) */
+/* `scroll-behavior: auto` stops the browser fighting Lenis's lerp.    */
+/* ------------------------------------------------------------------ */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
 /* ------------------------------------------------------------------ */
 /* Site ambience + shared surface treatments                           */
 /* ------------------------------------------------------------------ */
 
-/* Faint fixed aurora behind the whole page. Softer than the hero mesh so it
-   reads as atmosphere on every route, in both themes. */
+/* Faint fixed aurora behind the whole page: pale blue and pale purple washes
+   that read as atmosphere on every route. The animated orbs in
+   components/ui/AmbientOrbs.tsx layer on top of this. */
 .aurora {
   position: fixed;
   inset: 0;
@@ -78,14 +112,14 @@
   pointer-events: none;
   background-image:
     radial-gradient(
-      40rem 26rem at 85% -5%,
-      color-mix(in oklab, var(--accent) 9%, transparent),
-      transparent 60%
+      42rem 28rem at 88% -8%,
+      color-mix(in oklab, #2563eb 7%, transparent),
+      transparent 62%
     ),
     radial-gradient(
-      36rem 24rem at -10% 40%,
-      color-mix(in oklab, var(--accent) 6%, transparent),
-      transparent 55%
+      38rem 26rem at -12% 38%,
+      color-mix(in oklab, #7c3aed 6%, transparent),
+      transparent 58%
     );
 }
 
@@ -95,43 +129,23 @@
   background-image: linear-gradient(
     90deg,
     transparent,
-    color-mix(in oklab, var(--accent) 45%, transparent),
+    color-mix(in oklab, var(--accent) 35%, transparent),
     color-mix(in oklab, var(--fg) 14%, transparent),
     transparent
   );
 }
 
-/* Accent gradient text for headline emphasis spans. */
-.text-gradient {
-  background-image: linear-gradient(
-    100deg,
-    var(--accent),
-    color-mix(in oklab, var(--accent) 55%, var(--fg))
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
 /* Reading-progress hairline under the sticky header (ScrollProgress). */
 .scroll-progress {
-  background-image: linear-gradient(90deg, var(--accent), transparent 90%);
-}
-
-/* One-shot scroll reveal (components/ui/Reveal.tsx). Starts hidden, animates
-   in when the IntersectionObserver fires, then stays. Under reduced motion
-   the observer never runs, so the element must be visible by default there. */
-.reveal {
-  opacity: 0;
-  transform: translate3d(0, 18px, 0);
-  transition:
-    opacity 600ms ease-out,
-    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.reveal-visible {
-  opacity: 1;
-  transform: none;
+  height: 2px;
+  width: 100%;
+  transform-origin: 0 50%;
+  background-image: linear-gradient(
+    90deg,
+    var(--accent),
+    color-mix(in oklab, var(--accent) 55%, #7c3aed) 70%,
+    transparent
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -144,26 +158,19 @@
   padding: 0.1rem 0.35rem;
   font-family: var(--font-mono);
   font-size: 0.875em;
+  color: color-mix(in oklab, var(--accent) 78%, var(--fg));
 }
 
 /* ------------------------------------------------------------------ */
-/* Shiki dual-theme output from rehype-pretty-code                     */
-/* One DOM tree: colours are CSS variables swapped by `.dark`.         */
+/* Shiki output from rehype-pretty-code                                */
+/* A single light theme is used, so token colours arrive as inline      */
+/* styles. All that is left to do here is neutralise the <pre> box —    */
+/* components/mdx/CodeBlock.tsx paints the surrounding surface.        */
 /* ------------------------------------------------------------------ */
-pre[data-language] code span {
-  color: var(--shiki-light);
-  font-style: var(--shiki-light-font-style);
-  font-weight: var(--shiki-light-font-weight);
-}
-
-.dark pre[data-language] code span {
-  color: var(--shiki-dark);
-  font-style: var(--shiki-dark-font-style);
-  font-weight: var(--shiki-dark-font-weight);
-}
-
 pre[data-language] {
   background-color: transparent;
+  padding: 0;
+  margin: 0;
 }
 
 pre[data-language]:focus {
@@ -208,187 +215,203 @@ h3:hover .heading-anchor,
 }
 
 /* ------------------------------------------------------------------ */
-/* Home hero (components/home/Hero.tsx)                                */
+/* Ambient gradient orbs (components/ui/AmbientOrbs.tsx)                */
+/* The pale blue / purple discs are plain Tailwind surfaces (`blur-3xl` */
+/* + `bg-blue-200/40`), so the only CSS they need is a hint that they   */
+/* will be transformed every scroll frame.                              */
 /* ------------------------------------------------------------------ */
-
-/* Static two-stop accent wash behind the hero, under the parallax orbs. */
-.hero-mesh {
-  background-image:
-    radial-gradient(
-      28rem 20rem at 12% 6%,
-      color-mix(in oklab, var(--accent) 16%, transparent),
-      transparent 65%
-    ),
-    radial-gradient(
-      30rem 22rem at 88% 92%,
-      color-mix(in oklab, var(--accent) 10%, transparent),
-      transparent 60%
-    );
-}
-
-/* Faint dotted grid; fades out towards the fold so it never fights the
-   heading. Uses --fg so it adapts to both themes. */
-.dot-grid {
-  background-image: radial-gradient(
-    color-mix(in oklab, var(--fg) 10%, transparent) 1px,
-    transparent 1px
-  );
-  background-size: 22px 22px;
-  mask-image: linear-gradient(to bottom, black, transparent 65%);
-  -webkit-mask-image: linear-gradient(to bottom, black, transparent 65%);
-}
-
-/* Accent glow orbs (HeroBackdrop, ParallaxBackdrop). Large blur + strong
-   opacity so they read as light in BOTH themes - the earlier 3%/6% versions
-   were invisible on light backgrounds. The parallax transform sits on the
-   ParallaxLayer wrapper, this animation on the orb itself, so they never
-   collide. */
-.glow-orb {
-  border-radius: 9999px;
-  filter: blur(48px);
-  background: radial-gradient(
-    closest-side,
-    color-mix(in oklab, var(--accent) 45%, transparent),
-    color-mix(in oklab, var(--accent) 14%, transparent) 55%,
-    transparent 78%
-  );
-}
-
-@keyframes orb-drift-a {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  50% {
-    transform: translate3d(1.25rem, -1rem, 0) scale(1.06);
-  }
-}
-
-@keyframes orb-drift-b {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  50% {
-    transform: translate3d(-1.5rem, 1.25rem, 0) scale(0.92);
-  }
-}
-
-.orb-drift-a {
-  animation: orb-drift-a 18s ease-in-out infinite;
-}
-
-.orb-drift-b {
-  animation: orb-drift-b 22s ease-in-out infinite;
-}
-
-/* Entrance only: each hero block fades up once, staggered through an inline
-   animation-delay. Runs on CSS alone (no JS, no scroll listener). */
-.hero-enter {
-  opacity: 0;
-  animation: hero-enter 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-@keyframes hero-enter {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 14px, 0);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* Scroll cue under the hero: a dot sliding down a small pill, looping. */
-.scroll-cue-dot {
-  animation: scroll-cue 1.8s ease-in-out infinite;
-}
-
-@keyframes scroll-cue {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  70% {
-    transform: translateY(1rem);
-    opacity: 0;
-  }
-
-  100% {
-    transform: translateY(0);
-    opacity: 0;
-  }
-}
-
-/* Availability pill dot: a soft ping behind a solid dot. */
-.availability-dot {
-  position: relative;
-}
-
-.availability-dot::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 9999px;
-  background-color: #22c55e;
-  animation: availability-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-@keyframes availability-ping {
-  0% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-
-  80%,
-  100% {
-    transform: scale(2.6);
-    opacity: 0;
-  }
+[data-orb] {
+  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  /* Entrance and ping must never depend on animation running. */
-  .hero-enter {
-    opacity: 1;
-    animation: none;
-  }
-
-  .availability-dot::after {
-    animation: none;
-  }
-
-  /* Reveals never depend on the observer firing: content is simply there. */
-  .reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-
-  /* Parallax layers freeze where they started (JS listeners also no-op). */
-  .glow-orb,
-  .orb-drift-a,
-  .orb-drift-b {
-    animation: none;
-  }
-
-  .scroll-cue-dot {
-    animation: none;
-  }
-
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
+
+/* ================================================================== */
+/*  Global fixed background + glassmorphism surfaces.                  */
+/*                                                                     */
+/*  ONE background for the whole document instead of a gradient per     */
+/*  section: sections used to clip their own wash at their own box      */
+/*  edge, which produced hard horizontal seams. This layer is fixed to  */
+/*  the viewport and sits outside the flow, so the wash is continuous.  */
+/* ================================================================== */
+@layer components {
+  .global-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh; /* mobile: ignore the URL-bar resize jump */
+    overflow: hidden;
+    pointer-events: none;
+    /* Opaque white base first: the layer must never let the canvas show
+       through as a different colour while blobs animate. */
+    background-color: #ffffff;
+    background-image:
+      radial-gradient(
+        60rem 40rem at 12% -10%,
+        rgba(191, 219, 254, 0.55),
+        transparent 65%
+      ),
+      radial-gradient(
+        50rem 38rem at 92% 8%,
+        rgba(221, 214, 254, 0.45),
+        transparent 60%
+      ),
+      linear-gradient(180deg, #ffffff 0%, #f8faff 45%, #fbf8ff 100%);
+  }
+
+  /* Moving mesh gradient. Only `background-position` animates here, so it
+     never collides with the transform-based parallax on the wrapper. */
+  .global-bg-mesh {
+    position: absolute;
+    inset: -20%;
+    background-image:
+      radial-gradient(closest-side, rgba(147, 197, 253, 0.35), transparent),
+      radial-gradient(closest-side, rgba(196, 181, 253, 0.3), transparent),
+      radial-gradient(closest-side, rgba(165, 180, 252, 0.28), transparent);
+    background-size:
+      55% 55%,
+      45% 45%,
+      50% 50%;
+    background-position:
+      8% 12%,
+      88% 22%,
+      42% 88%;
+    background-repeat: no-repeat;
+    filter: blur(60px);
+    animation: bg-mesh-shift 32s ease-in-out infinite alternate;
+  }
+
+  /* Scroll-parallax wrapper. GSAP writes `yPercent` here; the blobs inside
+     keep their own keyframe transforms. `inset: -15%` gives the drift room
+     to move without ever exposing an edge. */
+  .global-bg-parallax {
+    position: absolute;
+    inset: -15%;
+    will-change: transform;
+  }
+
+  .global-bg-blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(90px);
+    will-change: transform;
+  }
+
+  .global-bg-blob--blue {
+    top: -8%;
+    left: -6%;
+    width: 34rem;
+    height: 34rem;
+    background: rgba(147, 197, 253, 0.45);
+    animation: bg-drift-a 26s ease-in-out infinite alternate;
+  }
+
+  .global-bg-blob--purple {
+    top: 18%;
+    right: -10%;
+    width: 38rem;
+    height: 38rem;
+    background: rgba(216, 180, 254, 0.35);
+    animation: bg-drift-b 34s ease-in-out infinite alternate;
+  }
+
+  .global-bg-blob--indigo {
+    bottom: -14%;
+    left: 32%;
+    width: 28rem;
+    height: 28rem;
+    background: rgba(165, 180, 252, 0.4);
+    animation: bg-drift-c 30s ease-in-out infinite alternate;
+  }
+
+  /* Glassmorphism: translucent white + backdrop blur, so the animated
+     background shows through cards as the page scrolls past them. Declared in
+     the components layer so utilities (`hover:bg-white/85`, `border-gray-300`)
+     still win on hover. */
+  .glass {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(14px) saturate(150%);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 16px 40px -20px rgba(15, 23, 42, 0.18);
+  }
+}
+
+@keyframes bg-mesh-shift {
+  0% {
+    background-position:
+      8% 12%,
+      88% 22%,
+      42% 88%;
+  }
+  50% {
+    background-position:
+      22% 30%,
+      70% 44%,
+      56% 66%;
+  }
+  100% {
+    background-position:
+      14% 48%,
+      82% 62%,
+      34% 78%;
+  }
+}
+
+@keyframes bg-drift-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(6vw, -5vh, 0) scale(1.08);
+  }
+}
+
+@keyframes bg-drift-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-7vw, 6vh, 0) scale(0.93);
+  }
+}
+
+@keyframes bg-drift-c {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(4vw, -7vh, 0) scale(1.05);
+  }
+}
+
+/* Ambient motion off, background stays as still art. */
+@media (prefers-reduced-motion: reduce) {
+  .global-bg-mesh,
+  .global-bg-blob {
+    animation: none;
+  }
+}
+
+/* No backdrop-filter support: fall back to near-opaque white so text contrast
+   never depends on a filter that is not there. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: rgba(255, 255, 255, 0.96);
+  }
+}
+

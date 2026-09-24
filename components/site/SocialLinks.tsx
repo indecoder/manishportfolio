@@ -11,7 +11,13 @@ const paths: Record<SocialLink["icon"], string> = {
   rss: "M4 11a9 9 0 0 1 9 9h-2a7 7 0 0 0-7-7v-2Zm0-5a14 14 0 0 1 14 14h-2A12 12 0 0 0 4 8V6Zm1.5 12.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z",
 };
 
-/** Accessible icon links for GitHub / LinkedIn / X / email / RSS. */
+/**
+ * Accessible icon links for GitHub / LinkedIn / X / email / RSS.
+ *
+ * Deliberately monochrome: one gray tone that darkens and lifts on hover, so
+ * the row reads as quiet metadata under the hero rather than a strip of brand
+ * colours competing with the primary action.
+ */
 export function SocialLinks({
   links,
   className,
@@ -30,7 +36,7 @@ export function SocialLinks({
             {...(link.icon === "email" || link.icon === "rss"
               ? {}
               : { target: "_blank", rel: "noopener noreferrer me" })}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line text-muted-fg transition-colors hover:border-accent/50 hover:bg-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 transition-[transform,border-color,color,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:border-gray-300 hover:text-gray-900 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d={paths[link.icon]} />

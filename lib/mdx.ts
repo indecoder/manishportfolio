@@ -105,9 +105,9 @@ const evaluateOptions = {
     [
       rehypePrettyCode,
       {
-        // Two themes -> Shiki emits CSS custom properties and globals.css swaps
-        // them under `.dark`. One DOM tree, no client JS.
-        theme: { light: "github-light", dark: "github-dark" },
+        // Light-only site: one Shiki theme, so token colours arrive as inline
+        // styles and globals.css needs no `.dark` variable swap.
+        theme: "github-light",
         keepBackground: false,
         defaultLanguage: "text",
       },

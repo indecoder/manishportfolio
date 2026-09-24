@@ -1,76 +1,47 @@
 import Link from "next/link";
 import type { PostMeta } from "@/lib/mdx";
 import { PostCard } from "@/components/blog/PostCard";
-import { ParallaxBackdrop } from "@/components/ui/ParallaxBackdrop";
-import { ParallaxShift } from "@/components/ui/ParallaxShift";
-import { Reveal } from "@/components/ui/Reveal";
+import { RevealGroup } from "@/components/ui/RevealGroup";
 
-/** "Latest writing" section on the home page. */
+/**
+ * "Latest writing" section on the home page.
+ *
+ * Same reveal choreography as the project grid: one RevealGroup, `data-reveal`
+ * on the header and on each card wrapper, staggered 0.1s apart.
+ */
 export function LatestPosts({ posts }: { posts: PostMeta[] }) {
   if (posts.length === 0) return null;
 
   return (
-    <section className="relative overflow-hidden py-16">
-      <ParallaxBackdrop side="right" speed={0.18} />
+    <section className="relative overflow-hidden py-20 sm:py-24 lg:py-32">
 
-      <div className="relative">
-        <Reveal>
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
-                Writing
-              </p>
-              <h2 className="mt-2 text-3xl font-bold tracking-tight">
-                Latest writing
-              </h2>
-            </div>
-            <Link
-              href="/blog"
-              className="group font-mono text-xs text-muted-fg transition-colors hover:text-accent"
+      <RevealGroup className="relative">
+        <div data-reveal className="flex items-end justify-between gap-4">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            Latest writing
+          </h2>
+          <Link
+            href="/blog"
+            className="group shrink-0 text-sm font-medium text-gray-600 transition-colors hover:text-blue-600"
+          >
+            All posts{" "}
+            <span
+              aria-hidden
+              className="inline-block transition-transform duration-200 group-hover:translate-x-1"
             >
-              All posts{" "}
-              <span
-                aria-hidden
-                className="inline-block transition-transform duration-200 group-hover:translate-x-1"
-              >
-                →
-              </span>
-            </Link>
-          </div>
-        </Reveal>
-
-        {/* Column split-parallax: each column drifts at its own rate as the
-            section passes, so the grid visibly separates into layers. */}
-        <div className="mt-8 grid items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <ParallaxShift speed={0.04} maxShift={26} className="grid gap-5">
-            {posts
-              .filter((_, index) => index % 3 === 0)
-              .map((post, index) => (
-                <Reveal key={post.slug} delay={index * 160}>
-                  <PostCard post={post} />
-                </Reveal>
-              ))}
-          </ParallaxShift>
-          <ParallaxShift speed={0.06} maxShift={38} className="grid gap-5 sm:mt-8">
-            {posts
-              .filter((_, index) => index % 3 === 1)
-              .map((post, index) => (
-                <Reveal key={post.slug} delay={index * 160 + 60}>
-                  <PostCard post={post} />
-                </Reveal>
-              ))}
-          </ParallaxShift>
-          <ParallaxShift speed={0.08} maxShift={50} className="grid gap-5 sm:mt-4">
-            {posts
-              .filter((_, index) => index % 3 === 2)
-              .map((post, index) => (
-                <Reveal key={post.slug} delay={index * 160 + 120}>
-                  <PostCard post={post} />
-                </Reveal>
-              ))}
-          </ParallaxShift>
+              →
+            </span>
+          </Link>
         </div>
-      </div>
+
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post) => (
+            <div key={post.slug} data-reveal className="h-full">
+              <PostCard post={post} />
+            </div>
+          ))}
+        </div>
+      </RevealGroup>
     </section>
   );
 }
