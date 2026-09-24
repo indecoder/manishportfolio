@@ -66,6 +66,75 @@
 }
 
 /* ------------------------------------------------------------------ */
+/* Site ambience + shared surface treatments                           */
+/* ------------------------------------------------------------------ */
+
+/* Faint fixed aurora behind the whole page. Softer than the hero mesh so it
+   reads as atmosphere on every route, in both themes. */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(
+      40rem 26rem at 85% -5%,
+      color-mix(in oklab, var(--accent) 9%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      36rem 24rem at -10% 40%,
+      color-mix(in oklab, var(--accent) 6%, transparent),
+      transparent 55%
+    );
+}
+
+/* Gradient hairline: replaces flat borders on premium surfaces (header,
+   footer, feature cards). Fades out at the edges so it never looks boxed. */
+.hairline {
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--accent) 45%, transparent),
+    color-mix(in oklab, var(--fg) 14%, transparent),
+    transparent
+  );
+}
+
+/* Accent gradient text for headline emphasis spans. */
+.text-gradient {
+  background-image: linear-gradient(
+    100deg,
+    var(--accent),
+    color-mix(in oklab, var(--accent) 55%, var(--fg))
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Reading-progress hairline under the sticky header (ScrollProgress). */
+.scroll-progress {
+  background-image: linear-gradient(90deg, var(--accent), transparent 90%);
+}
+
+/* One-shot scroll reveal (components/ui/Reveal.tsx). Starts hidden, animates
+   in when the IntersectionObserver fires, then stays. Under reduced motion
+   the observer never runs, so the element must be visible by default there. */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity 600ms ease-out,
+    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ------------------------------------------------------------------ */
 /* Inline code (block code is handled by rehype-pretty-code below)     */
 /* ------------------------------------------------------------------ */
 :not(pre) > code {
@@ -233,6 +302,28 @@ h3:hover .heading-anchor,
   }
 }
 
+/* Scroll cue under the hero: a dot sliding down a small pill, looping. */
+.scroll-cue-dot {
+  animation: scroll-cue 1.8s ease-in-out infinite;
+}
+
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  70% {
+    transform: translateY(1rem);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+}
+
 /* Availability pill dot: a soft ping behind a solid dot. */
 .availability-dot {
   position: relative;
@@ -275,10 +366,21 @@ h3:hover .heading-anchor,
     animation: none;
   }
 
+  /* Reveals never depend on the observer firing: content is simply there. */
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
   /* Parallax layers freeze where they started (JS listeners also no-op). */
   .glow-orb,
   .orb-drift-a,
   .orb-drift-b {
+    animation: none;
+  }
+
+  .scroll-cue-dot {
     animation: none;
   }
 

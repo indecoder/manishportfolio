@@ -7,6 +7,7 @@ import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { Container } from "@/components/ui/Container";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
+import { ScrollProgress } from "@/components/site/ScrollProgress";
 
 function isActive(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";
@@ -19,12 +20,21 @@ export function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70">
-      <Container className="flex h-16 items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 border-b border-line/60 bg-bg/80 shadow-sm shadow-black/[0.03] backdrop-blur-md supports-[backdrop-filter]:bg-bg/65 dark:shadow-black/20">
+      <Container wide className="flex h-16 items-center justify-between gap-4">
         <Link
           href="/"
-          className="font-mono text-sm font-semibold tracking-tight text-fg transition-colors hover:text-accent"
+          className="group flex items-center gap-2 font-mono text-sm font-semibold tracking-tight text-fg transition-colors hover:text-accent"
         >
+          <span
+            aria-hidden
+            className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/12 text-xs font-bold text-accent transition-transform duration-200 group-hover:-translate-y-0.5"
+          >
+            {site.author.name
+              .split(" ")
+              .map((part) => part[0])
+              .join("")}
+          </span>
           <span aria-hidden="true">~/</span>
           {site.author.name.toLowerCase().replace(/\s+/g, "")}
         </Link>
@@ -100,6 +110,10 @@ export function Header() {
           </Container>
         </nav>
       )}
+
+      {/* Reading progress: gradient hairline pinned to the header's bottom
+          edge, scaled to document scroll. */}
+      <ScrollProgress />
     </header>
   );
 }

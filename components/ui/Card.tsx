@@ -16,9 +16,9 @@ export function Card({
   return (
     <Tag
       className={cn(
-        "rounded-2xl border border-line bg-card p-5 relative",
+        "rounded-2xl border border-line bg-card/85 p-5 relative backdrop-blur-sm",
         hoverable &&
-          "transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/50 hover:bg-muted/60 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/40",
+          "transition-all duration-200 hover:-translate-y-1 hover:border-accent/50 hover:shadow-xl hover:shadow-accent/[0.07] dark:hover:shadow-accent/[0.12]",
         className,
       )}
     >

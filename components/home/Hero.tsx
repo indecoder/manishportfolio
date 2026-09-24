@@ -39,7 +39,7 @@ export function Hero() {
             style={{ animationDelay: "90ms" }}
           >
             Hi, I&apos;m {site.author.name}.
-            <span className="mt-2 block text-2xl font-medium text-muted-fg sm:text-3xl">
+            <span className="text-gradient mt-2 block text-2xl font-medium sm:text-3xl">
               I take React, TypeScript and AI platforms from idea to production.
             </span>
           </h1>
@@ -89,6 +89,17 @@ export function Hero() {
         </div>
 
         <HeroPortrait />
+      </div>
+
+      {/* Scroll cue: hints the parallax layers below without stealing focus. */}
+      <div
+        aria-hidden
+        className="hero-enter mt-16 flex justify-center lg:mt-20"
+        style={{ animationDelay: "520ms" }}
+      >
+        <span className="scroll-cue flex h-9 w-5 items-start justify-center rounded-full border border-line p-1">
+          <span className="scroll-cue-dot h-1.5 w-1 rounded-full bg-accent" />
+        </span>
       </div>
     </section>
   );
